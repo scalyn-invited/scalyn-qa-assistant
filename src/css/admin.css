@@ -1,0 +1,244 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ==========================================================================
+   Scalyn QA Assistant — Custom Component Layer
+   ========================================================================== */
+
+@layer components {
+
+  /* ---------- WordPress admin resets inside plugin wrapper ---------- */
+  .scalyn-wrap {
+    @apply sqt-box-border sqt-font-sans sqt-text-sm sqt-text-gray-700 sqt-leading-normal sqt-antialiased;
+  }
+
+  .scalyn-wrap *,
+  .scalyn-wrap *::before,
+  .scalyn-wrap *::after {
+    @apply sqt-box-border;
+  }
+
+  .scalyn-wrap h1,
+  .scalyn-wrap h2,
+  .scalyn-wrap h3,
+  .scalyn-wrap h4,
+  .scalyn-wrap h5,
+  .scalyn-wrap h6 {
+    @apply sqt-font-semibold sqt-text-gray-900 sqt-leading-tight sqt-m-0 sqt-p-0;
+  }
+
+  .scalyn-wrap h1 { @apply sqt-text-2xl; }
+  .scalyn-wrap h2 { @apply sqt-text-xl; }
+  .scalyn-wrap h3 { @apply sqt-text-lg; }
+
+  .scalyn-wrap p {
+    @apply sqt-my-2 sqt-leading-relaxed;
+  }
+
+  .scalyn-wrap a {
+    @apply sqt-text-primary sqt-no-underline hover:sqt-underline;
+  }
+
+  /* ---------- Card ---------- */
+  .scalyn-card {
+    @apply sqt-bg-white sqt-rounded-lg sqt-shadow-sm sqt-border sqt-border-gray-200 sqt-p-6 sqt-mb-4;
+  }
+
+  .scalyn-card--header {
+    @apply sqt-border-b sqt-border-gray-200 sqt-pb-4 sqt-mb-4;
+  }
+
+  /* ---------- Badge ---------- */
+  .scalyn-badge {
+    @apply sqt-inline-flex sqt-items-center sqt-px-2.5 sqt-py-0.5 sqt-rounded-full sqt-text-xs sqt-font-medium sqt-leading-none;
+  }
+
+  .scalyn-badge--green {
+    @apply sqt-bg-green-100 sqt-text-green-800;
+  }
+
+  .scalyn-badge--yellow {
+    @apply sqt-bg-yellow-100 sqt-text-yellow-800;
+  }
+
+  .scalyn-badge--red {
+    @apply sqt-bg-red-100 sqt-text-red-800;
+  }
+
+  .scalyn-badge--blue {
+    @apply sqt-bg-blue-100 sqt-text-blue-800;
+  }
+
+  .scalyn-badge--gray {
+    @apply sqt-bg-gray-100 sqt-text-gray-700;
+  }
+
+  /* ---------- Buttons ---------- */
+  .scalyn-btn {
+    @apply sqt-inline-flex sqt-items-center sqt-justify-center sqt-px-4 sqt-py-2 sqt-rounded-md sqt-text-sm sqt-font-medium
+           sqt-border sqt-border-transparent sqt-cursor-pointer sqt-transition-colors sqt-duration-150
+           sqt-bg-primary sqt-text-white hover:sqt-bg-indigo-700 focus:sqt-outline-none focus:sqt-ring-2 focus:sqt-ring-primary focus:sqt-ring-offset-2
+           disabled:sqt-opacity-50 disabled:sqt-cursor-not-allowed;
+  }
+
+  .scalyn-btn--secondary {
+    @apply sqt-bg-white sqt-text-gray-700 sqt-border-gray-300 hover:sqt-bg-gray-50;
+  }
+
+  .scalyn-btn--danger {
+    @apply sqt-bg-danger sqt-text-white hover:sqt-bg-red-600;
+  }
+
+  .scalyn-btn--small {
+    @apply sqt-px-3 sqt-py-1.5 sqt-text-xs;
+  }
+
+  .scalyn-btn--large {
+    @apply sqt-px-6 sqt-py-3 sqt-text-base;
+  }
+
+  /* ---------- Score Circle ---------- */
+  .scalyn-score-circle {
+    @apply sqt-relative sqt-inline-flex sqt-items-center sqt-justify-center sqt-rounded-full;
+    width: 80px;
+    height: 80px;
+    background: conic-gradient(
+      var(--scalyn-score-color, #4F46E5) calc(var(--scalyn-score, 0) * 1%),
+      #e5e7eb calc(var(--scalyn-score, 0) * 1%)
+    );
+  }
+
+  .scalyn-score-circle::after {
+    content: '';
+    @apply sqt-absolute sqt-rounded-full sqt-bg-white;
+    width: 64px;
+    height: 64px;
+  }
+
+  .scalyn-score-circle__value {
+    @apply sqt-relative sqt-z-10 sqt-text-xl sqt-font-bold sqt-text-gray-900;
+  }
+
+  .scalyn-score-circle--large {
+    width: 120px;
+    height: 120px;
+  }
+
+  .scalyn-score-circle--large::after {
+    width: 96px;
+    height: 96px;
+  }
+
+  .scalyn-score-circle--large .scalyn-score-circle__value {
+    @apply sqt-text-3xl;
+  }
+
+  /* ---------- Check-item ---------- */
+  .scalyn-check-item {
+    @apply sqt-flex sqt-items-start sqt-gap-3 sqt-py-3 sqt-px-4 sqt-border-b sqt-border-gray-100 last:sqt-border-b-0;
+  }
+
+  .scalyn-check-item__icon {
+    @apply sqt-flex-shrink-0 sqt-w-5 sqt-h-5 sqt-mt-0.5;
+  }
+
+  .scalyn-check-item__body {
+    @apply sqt-flex-1 sqt-min-w-0;
+  }
+
+  .scalyn-check-item__title {
+    @apply sqt-text-sm sqt-font-medium sqt-text-gray-900;
+  }
+
+  .scalyn-check-item__detail {
+    @apply sqt-text-xs sqt-text-gray-500 sqt-mt-0.5;
+  }
+
+  .scalyn-check-item--pass .scalyn-check-item__icon {
+    @apply sqt-text-success;
+  }
+
+  .scalyn-check-item--warning .scalyn-check-item__icon {
+    @apply sqt-text-warning;
+  }
+
+  .scalyn-check-item--fail .scalyn-check-item__icon {
+    @apply sqt-text-danger;
+  }
+
+  /* ---------- Tooltip ---------- */
+  .scalyn-tooltip {
+    @apply sqt-relative sqt-inline-block;
+  }
+
+  .scalyn-tooltip__content {
+    @apply sqt-invisible sqt-absolute sqt-z-50 sqt-px-3 sqt-py-2 sqt-text-xs sqt-text-white sqt-bg-gray-900 sqt-rounded-md sqt-shadow-lg
+           sqt-whitespace-nowrap sqt-bottom-full sqt-left-1/2 sqt--translate-x-1/2 sqt-mb-2
+           sqt-opacity-0 sqt-transition-all sqt-duration-150;
+  }
+
+  .scalyn-tooltip__content::after {
+    content: '';
+    @apply sqt-absolute sqt-top-full sqt-left-1/2 sqt--translate-x-1/2;
+    border-width: 4px;
+    border-style: solid;
+    border-color: theme('colors.gray.900') transparent transparent transparent;
+  }
+
+  .scalyn-tooltip:hover .scalyn-tooltip__content {
+    @apply sqt-visible sqt-opacity-100;
+  }
+
+  /* ---------- Tabs ---------- */
+  .scalyn-tabs {
+    @apply sqt-flex sqt-border-b sqt-border-gray-200 sqt-mb-4;
+  }
+
+  .scalyn-tab {
+    @apply sqt-px-4 sqt-py-2 sqt-text-sm sqt-font-medium sqt-text-gray-500 sqt-border-b-2 sqt-border-transparent
+           sqt-cursor-pointer sqt-transition-colors sqt-duration-150 sqt--mb-px
+           hover:sqt-text-gray-700 hover:sqt-border-gray-300;
+  }
+
+  .scalyn-tab--active {
+    @apply sqt-text-primary sqt-border-primary;
+  }
+
+  /* ---------- Utility classes ---------- */
+  .scalyn-section-title {
+    @apply sqt-text-lg sqt-font-semibold sqt-text-gray-900 sqt-mb-3;
+  }
+
+  .scalyn-divider {
+    @apply sqt-border-t sqt-border-gray-200 sqt-my-4;
+  }
+
+  .scalyn-progress {
+    @apply sqt-w-full sqt-h-2 sqt-bg-gray-200 sqt-rounded-full sqt-overflow-hidden;
+  }
+
+  .scalyn-progress__bar {
+    @apply sqt-h-full sqt-rounded-full sqt-transition-all sqt-duration-500;
+  }
+
+  .scalyn-alert {
+    @apply sqt-rounded-md sqt-p-4 sqt-mb-4 sqt-text-sm;
+  }
+
+  .scalyn-alert--info {
+    @apply sqt-bg-blue-50 sqt-text-blue-800 sqt-border sqt-border-blue-200;
+  }
+
+  .scalyn-alert--success {
+    @apply sqt-bg-green-50 sqt-text-green-800 sqt-border sqt-border-green-200;
+  }
+
+  .scalyn-alert--warning {
+    @apply sqt-bg-yellow-50 sqt-text-yellow-800 sqt-border sqt-border-yellow-200;
+  }
+
+  .scalyn-alert--danger {
+    @apply sqt-bg-red-50 sqt-text-red-800 sqt-border sqt-border-red-200;
+  }
+}

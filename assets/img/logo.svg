@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" fill="none">
+  <!-- Shield body -->
+  <path
+    d="M32 4 L56 16 V34 C56 48 44 58 32 62 C20 58 8 48 8 34 V16 Z"
+    fill="#4F46E5"
+    opacity="0.15"
+    stroke="#4F46E5"
+    stroke-width="2.5"
+    stroke-linejoin="round"
+  />
+  <!-- Inner shield highlight -->
+  <path
+    d="M32 10 L50 19 V33 C50 44 41 52 32 56 C23 52 14 44 14 33 V19 Z"
+    fill="#4F46E5"
+    opacity="0.25"
+  />
+  <!-- Checkmark -->
+  <polyline
+    points="22,33 29,40 42,26"
+    stroke="#4F46E5"
+    stroke-width="4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  />
+</svg>

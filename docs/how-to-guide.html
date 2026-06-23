@@ -1,0 +1,1430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>How To Guide - Scalyn QA Assistant</title>
+    <link rel="icon" type="image/png" href="assets/images/scalyn-icon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --primary-light: #818cf8;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --dark: #0f172a;
+            --dark-light: #1e293b;
+            --gray-50: #f8fafc;
+            --gray-100: #f1f5f9;
+            --gray-200: #e2e8f0;
+            --gray-300: #cbd5e1;
+            --gray-400: #94a3b8;
+            --gray-500: #64748b;
+            --gray-600: #475569;
+            --gray-700: #334155;
+            --gray-800: #1e293b;
+            --white: #ffffff;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            color: var(--dark);
+            line-height: 1.7;
+            background: var(--white);
+        }
+
+        /* ── Top Bar ── */
+        .topbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 100;
+            background: rgba(255,255,255,0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--gray-200);
+            padding: 0.75rem 2rem;
+        }
+        .topbar-inner {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .topbar-logo {
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+            text-decoration: none;
+            font-weight: 800;
+            font-size: 1.1rem;
+            color: var(--dark);
+        }
+        .topbar-logo img { height: 28px; }
+        .topbar-links { display: flex; gap: 1.5rem; align-items: center; }
+        .topbar-links a {
+            text-decoration: none;
+            color: var(--gray-500);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+        .topbar-links a:hover { color: var(--primary); }
+        .topbar-github {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+            background: var(--dark);
+            color: var(--white) !important;
+            padding: 0.45rem 1rem;
+            border-radius: 8px;
+            font-weight: 600 !important;
+            font-size: 0.8rem !important;
+            transition: all 0.2s !important;
+        }
+        .topbar-github:hover { background: var(--gray-700) !important; }
+
+        /* ── Layout ── */
+        .layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            max-width: 1400px;
+            margin: 0 auto;
+            min-height: 100vh;
+            padding-top: 56px;
+        }
+
+        /* ── Sidebar ── */
+        .sidebar {
+            position: sticky;
+            top: 56px;
+            height: calc(100vh - 56px);
+            overflow-y: auto;
+            padding: 2rem 1.5rem;
+            border-right: 1px solid var(--gray-200);
+            background: var(--gray-50);
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--gray-300); border-radius: 4px; }
+        .sidebar-search {
+            position: relative;
+            margin-bottom: 1.5rem;
+        }
+        .sidebar-search input {
+            width: 100%;
+            padding: 0.55rem 0.75rem 0.55rem 2.25rem;
+            border: 1px solid var(--gray-200);
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-family: inherit;
+            background: var(--white);
+            outline: none;
+            transition: border-color 0.2s;
+        }
+        .sidebar-search input:focus { border-color: var(--primary); }
+        .sidebar-search svg {
+            position: absolute;
+            left: 0.7rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray-400);
+        }
+        .sidebar-group { margin-bottom: 1.75rem; }
+        .sidebar-group-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            color: var(--gray-400);
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            padding-left: 0.5rem;
+        }
+        .sidebar-link {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.45rem 0.75rem;
+            border-radius: 8px;
+            text-decoration: none;
+            color: var(--gray-600);
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.15s;
+            margin-bottom: 2px;
+        }
+        .sidebar-link:hover { background: var(--gray-200); color: var(--dark); }
+        .sidebar-link.active {
+            background: rgba(99,102,241,0.1);
+            color: var(--primary);
+            font-weight: 600;
+        }
+        .sidebar-link .link-icon { font-size: 1rem; width: 20px; text-align: center; }
+
+        /* ── Main Content ── */
+        .main {
+            padding: 3rem 4rem;
+            max-width: 900px;
+        }
+
+        /* Hero Header */
+        .guide-hero {
+            margin-bottom: 3rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        .guide-hero .breadcrumb {
+            font-size: 0.8rem;
+            color: var(--gray-400);
+            margin-bottom: 1rem;
+        }
+        .guide-hero .breadcrumb a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        .guide-hero h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--dark), var(--gray-700));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .guide-hero p {
+            font-size: 1.1rem;
+            color: var(--gray-500);
+            max-width: 600px;
+            line-height: 1.7;
+        }
+        .guide-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 1.25rem;
+            font-size: 0.8rem;
+            color: var(--gray-400);
+        }
+        .guide-meta span {
+            display: flex;
+            align-items: center;
+            gap: 0.35rem;
+        }
+
+        /* ── Content Sections ── */
+        .content-section {
+            margin-bottom: 3.5rem;
+            scroll-margin-top: 80px;
+        }
+        .content-section h2 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--gray-100);
+            display: flex;
+            align-items: center;
+            gap: 0.6rem;
+        }
+        .content-section h2 .section-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            flex-shrink: 0;
+        }
+        .content-section h3 {
+            font-size: 1.15rem;
+            font-weight: 700;
+            margin: 1.75rem 0 0.75rem;
+            color: var(--dark);
+        }
+        .content-section p {
+            color: var(--gray-600);
+            margin-bottom: 1rem;
+            font-size: 0.95rem;
+        }
+
+        /* Numbered steps */
+        .steps-list {
+            counter-reset: step;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            margin: 1.5rem 0;
+        }
+        .step-item {
+            counter-increment: step;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            padding: 1.25rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            transition: all 0.2s;
+        }
+        .step-item:hover {
+            border-color: var(--primary-light);
+            background: rgba(99,102,241,0.02);
+        }
+        .step-item::before {
+            content: counter(step);
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 0.85rem;
+            flex-shrink: 0;
+        }
+        .step-item-content h4 {
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+        .step-item-content p {
+            font-size: 0.85rem;
+            color: var(--gray-500);
+            margin: 0;
+        }
+
+        /* Code blocks */
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            background: var(--gray-100);
+            padding: 0.15rem 0.45rem;
+            border-radius: 4px;
+            color: var(--primary-dark);
+        }
+        pre {
+            background: var(--dark);
+            color: #e2e8f0;
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            overflow-x: auto;
+            margin: 1rem 0 1.5rem;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            line-height: 1.7;
+            position: relative;
+        }
+        pre code {
+            background: none;
+            padding: 0;
+            color: inherit;
+        }
+        .code-label {
+            position: absolute;
+            top: 0.5rem;
+            right: 0.75rem;
+            font-size: 0.65rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--gray-500);
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+        }
+
+        /* Callout boxes */
+        .callout {
+            padding: 1.25rem 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            display: flex;
+            gap: 0.75rem;
+            align-items: flex-start;
+            font-size: 0.9rem;
+        }
+        .callout-icon {
+            font-size: 1.2rem;
+            flex-shrink: 0;
+            line-height: 1.5;
+        }
+        .callout-content { flex: 1; }
+        .callout-content strong { display: block; margin-bottom: 0.25rem; }
+        .callout-info {
+            background: rgba(99,102,241,0.06);
+            border: 1px solid rgba(99,102,241,0.15);
+            color: var(--gray-700);
+        }
+        .callout-tip {
+            background: rgba(16,185,129,0.06);
+            border: 1px solid rgba(16,185,129,0.15);
+            color: var(--gray-700);
+        }
+        .callout-warning {
+            background: rgba(245,158,11,0.06);
+            border: 1px solid rgba(245,158,11,0.15);
+            color: var(--gray-700);
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 1rem 0 1.5rem;
+            font-size: 0.85rem;
+        }
+        th, td {
+            padding: 0.75rem 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--gray-200);
+        }
+        th {
+            background: var(--gray-50);
+            font-weight: 700;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            color: var(--gray-500);
+        }
+        td { color: var(--gray-600); }
+        tr:hover td { background: var(--gray-50); }
+
+        /* Feature cards (grid) */
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+        .feature-mini {
+            padding: 1.25rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+        }
+        .feature-mini h4 {
+            font-size: 0.9rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+        .feature-mini p {
+            font-size: 0.82rem;
+            color: var(--gray-500);
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 0.15rem 0.6rem;
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 700;
+        }
+        .badge-green { background: rgba(16,185,129,0.1); color: var(--success); }
+        .badge-amber { background: rgba(245,158,11,0.1); color: var(--warning); }
+        .badge-red { background: rgba(239,68,68,0.1); color: var(--danger); }
+        .badge-purple { background: rgba(99,102,241,0.1); color: var(--primary); }
+
+        /* Score visual */
+        .score-demo {
+            display: flex;
+            gap: 2rem;
+            padding: 1.5rem;
+            background: var(--gray-50);
+            border-radius: 12px;
+            border: 1px solid var(--gray-200);
+            margin: 1rem 0 1.5rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .score-ring {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 800;
+            font-size: 1.3rem;
+            color: var(--white);
+            position: relative;
+        }
+        .score-ring::after {
+            content: attr(data-label);
+            position: absolute;
+            bottom: -22px;
+            font-size: 0.7rem;
+            color: var(--gray-500);
+            font-weight: 600;
+            white-space: nowrap;
+        }
+        .ring-green { background: conic-gradient(var(--success) 0% 92%, var(--gray-200) 92%); }
+        .ring-yellow { background: conic-gradient(var(--warning) 0% 65%, var(--gray-200) 65%); }
+        .ring-red { background: conic-gradient(var(--danger) 0% 35%, var(--gray-200) 35%); }
+        .score-ring .inner {
+            width: 62px;
+            height: 62px;
+            background: var(--gray-50);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            color: var(--dark);
+        }
+
+        /* Check list visual */
+        .check-list-visual {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            margin: 1rem 0 1.5rem;
+        }
+        .check-list-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0.7rem 1rem;
+            background: var(--gray-50);
+            border-radius: 8px;
+            border: 1px solid var(--gray-200);
+            font-size: 0.85rem;
+        }
+        .check-list-row .name {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        .check-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.6rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+        .dot-pass { background: var(--success); }
+        .dot-warn { background: var(--warning); }
+        .dot-fail { background: var(--danger); }
+
+        /* FAQ accordion */
+        .faq-list { margin: 1.5rem 0; }
+        .faq-item {
+            border: 1px solid var(--gray-200);
+            border-radius: 10px;
+            margin-bottom: 0.75rem;
+            overflow: hidden;
+        }
+        .faq-question {
+            padding: 1rem 1.25rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--gray-50);
+            transition: background 0.2s;
+            user-select: none;
+        }
+        .faq-question:hover { background: var(--gray-100); }
+        .faq-question .arrow {
+            transition: transform 0.3s;
+            font-size: 0.75rem;
+            color: var(--gray-400);
+        }
+        .faq-item.open .faq-question .arrow { transform: rotate(180deg); }
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+        }
+        .faq-answer-inner {
+            padding: 1rem 1.25rem;
+            font-size: 0.85rem;
+            color: var(--gray-600);
+            line-height: 1.7;
+        }
+        .faq-item.open .faq-answer { max-height: 500px; }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .layout { grid-template-columns: 1fr; }
+            .sidebar { display: none; }
+            .main { padding: 2rem 1.5rem; }
+        }
+        @media (max-width: 640px) {
+            .guide-hero h1 { font-size: 1.75rem; }
+            .feature-grid { grid-template-columns: 1fr; }
+            .score-demo { justify-content: center; }
+            .topbar-links { gap: 0.75rem; }
+        }
+
+        /* Mobile sidebar toggle */
+        .sidebar-toggle {
+            display: none;
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            z-index: 200;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: var(--white);
+            border: none;
+            font-size: 1.25rem;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(99,102,241,0.4);
+        }
+        @media (max-width: 1024px) {
+            .sidebar-toggle { display: flex; align-items: center; justify-content: center; }
+            .sidebar.mobile-open {
+                display: block;
+                position: fixed;
+                top: 56px;
+                left: 0;
+                bottom: 0;
+                width: 300px;
+                z-index: 150;
+                box-shadow: 4px 0 15px rgba(0,0,0,0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Top Bar -->
+<header class="topbar">
+    <div class="topbar-inner">
+        <a href="landing-page.html" class="topbar-logo">
+            <img src="assets/images/scalyn-icon.png" alt="Scalyn">
+            Scalyn QA Docs
+        </a>
+        <div class="topbar-links">
+            <a href="landing-page.html">Home</a>
+            <a href="https://drive.google.com/drive/folders/1VcSwGnCn_WPCgoGJRqeQIPtGVFvQLYNf?usp=sharing" class="topbar-github" target="_blank">
+                <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5 5 5-5m-5 5V3"/></svg>
+                Download
+            </a>
+        </div>
+    </div>
+</header>
+
+<div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-search">
+            <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/></svg>
+            <input type="text" placeholder="Search docs..." id="sidebarSearch">
+        </div>
+
+        <div class="sidebar-group">
+            <div class="sidebar-group-title">Getting Started</div>
+            <a href="#installation" class="sidebar-link active"><span class="link-icon">&#x1F4E5;</span> Installation</a>
+            <a href="#setup-wizard" class="sidebar-link"><span class="link-icon">&#x2728;</span> Setup Wizard</a>
+            <a href="#requirements" class="sidebar-link"><span class="link-icon">&#x2699;</span> Requirements</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-group-title">Core Features</div>
+            <a href="#dashboard" class="sidebar-link"><span class="link-icon">&#x1F4CA;</span> Dashboard</a>
+            <a href="#page-audits" class="sidebar-link"><span class="link-icon">&#x1F50D;</span> Page Audits</a>
+            <a href="#scoring" class="sidebar-link"><span class="link-icon">&#x1F3AF;</span> Scoring System</a>
+            <a href="#launch-checklist" class="sidebar-link"><span class="link-icon">&#x1F680;</span> Launch Checklist</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-group-title">Analyzers</div>
+            <a href="#seo-analyzer" class="sidebar-link"><span class="link-icon">&#x1F50E;</span> SEO Analyzer</a>
+            <a href="#content-analyzer" class="sidebar-link"><span class="link-icon">&#x1F4DD;</span> Content Analyzer</a>
+            <a href="#link-checker" class="sidebar-link"><span class="link-icon">&#x1F517;</span> Link Checker</a>
+            <a href="#image-analyzer" class="sidebar-link"><span class="link-icon">&#x1F5BC;</span> Image Optimizer</a>
+            <a href="#heading-analyzer" class="sidebar-link"><span class="link-icon">&#x1F524;</span> Heading Structure</a>
+            <a href="#form-analyzer" class="sidebar-link"><span class="link-icon">&#x1F4CB;</span> Forms & Buttons</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-group-title">AI & Integrations</div>
+            <a href="#ai-setup" class="sidebar-link"><span class="link-icon">&#x1F9E0;</span> AI Setup</a>
+            <a href="#seo-plugins" class="sidebar-link"><span class="link-icon">&#x1F50C;</span> SEO Plugins</a>
+            <a href="#reports" class="sidebar-link"><span class="link-icon">&#x1F4C4;</span> Reports</a>
+        </div>
+        <div class="sidebar-group">
+            <div class="sidebar-group-title">Advanced</div>
+            <a href="#inspector" class="sidebar-link"><span class="link-icon">&#x1F441;</span> Frontend Inspector</a>
+            <a href="#ignore-rules" class="sidebar-link"><span class="link-icon">&#x1F6AB;</span> Ignore Rules</a>
+            <a href="#faq" class="sidebar-link"><span class="link-icon">&#x2753;</span> FAQ</a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main">
+        <div class="guide-hero">
+            <div class="breadcrumb"><a href="landing-page.html">Scalyn QA</a> / Documentation</div>
+            <h1>How To Guide</h1>
+            <p>Everything you need to install, configure, and get the most out of the Scalyn QA Assistant plugin for WordPress.</p>
+            <div class="guide-meta">
+                <span>&#x1F4D6; ~15 min read</span>
+                <span>&#x1F3F7; v1.4.7</span>
+                <span>&#x1F4C5; Updated June 2026</span>
+            </div>
+        </div>
+
+        <!-- ━━━ Installation ━━━ -->
+        <section class="content-section" id="installation">
+            <h2><span class="section-icon icon-purple" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x1F4E5;</span> Installation</h2>
+            <p>Scalyn QA Assistant can be installed like any WordPress plugin. No technical knowledge required.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Download the plugin</h4>
+                        <p>Download the <code>.zip</code> file from <a href="https://drive.google.com/drive/folders/1VcSwGnCn_WPCgoGJRqeQIPtGVFvQLYNf?usp=sharing" target="_blank">Google Drive</a>.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Upload in WordPress</h4>
+                        <p>Go to <strong>Plugins &rarr; Add New &rarr; Upload Plugin</strong>, select the .zip file, and click <strong>Install Now</strong>.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Activate the plugin</h4>
+                        <p>Click <strong>Activate</strong> and you'll be redirected to the setup wizard.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon">&#x1F4A1;</span>
+                <div class="callout-content">
+                    <strong>Auto-Updates</strong>
+                    The plugin includes update detection. Go to <strong>Settings &rarr; Advanced</strong> to configure update notifications directly in WordPress.
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Setup Wizard ━━━ -->
+        <section class="content-section" id="setup-wizard">
+            <h2><span class="section-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#x2728;</span> Setup Wizard</h2>
+            <p>On first activation, the setup wizard guides you through initial configuration. You can also access it later from <strong>Settings &rarr; Wizard</strong> tab.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Select post types to scan</h4>
+                        <p>Choose which post types (Posts, Pages, Custom Post Types) should be included in QA audits.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Set quality thresholds</h4>
+                        <p>Define what scores count as "green" (good), "yellow" (needs work), and "red" (critical). Defaults: green &ge; 80, yellow &ge; 50.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Connect an AI provider (optional)</h4>
+                        <p>Enter your API key for OpenAI, Gemini, Claude, or another provider to enable AI metadata generation.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Run your first scan</h4>
+                        <p>The wizard offers to batch-scan all published content so your dashboard is immediately populated.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Requirements ━━━ -->
+        <section class="content-section" id="requirements">
+            <h2><span class="section-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#x2699;</span> Requirements</h2>
+            <table>
+                <thead>
+                    <tr><th>Requirement</th><th>Minimum</th><th>Recommended</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td>WordPress</td><td>6.0+</td><td>Latest</td></tr>
+                    <tr><td>PHP</td><td>8.2+</td><td>8.3+</td></tr>
+                    <tr><td>Memory Limit</td><td>128 MB</td><td>256 MB+</td></tr>
+                    <tr><td>SEO Plugin</td><td>Optional</td><td>Yoast or Rank Math</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ━━━ Dashboard ━━━ -->
+        <section class="content-section" id="dashboard">
+            <h2><span class="section-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x1F4CA;</span> Dashboard</h2>
+            <p>The dashboard gives you a bird's-eye view of your site's quality status. It displays project-wide scores, pages needing attention, and recent scan activity.</p>
+
+            <h3>Score Overview</h3>
+            <p>Four circular indicators show your site's health at a glance:</p>
+
+            <div class="score-demo">
+                <div class="score-ring ring-green" data-label="Overall">
+                    <div class="inner">92</div>
+                </div>
+                <div class="score-ring ring-green" data-label="SEO Ready">
+                    <div class="inner">88</div>
+                </div>
+                <div class="score-ring ring-yellow" data-label="QA Ready">
+                    <div class="inner">65</div>
+                </div>
+                <div class="score-ring ring-green" data-label="Launch Ready">
+                    <div class="inner">95</div>
+                </div>
+            </div>
+
+            <h3>Dashboard Widgets</h3>
+            <div class="feature-grid">
+                <div class="feature-mini">
+                    <h4>&#x1F534; Pages Needing Attention</h4>
+                    <p>Shows your lowest-scoring published pages with color-coded status indicators.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F552; Recent Scans</h4>
+                    <p>Timeline of recently audited pages with timestamps and score changes.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x26A0; Top Failing Issues</h4>
+                    <p>Most common problems found across your site, ranked by frequency.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F680; Launch Summary</h4>
+                    <p>Quick overview of launch readiness with pass/warn/fail counts.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-tip">
+                <span class="callout-icon">&#x2705;</span>
+                <div class="callout-content">
+                    <strong>Auto-Refresh</strong>
+                    The dashboard auto-refreshes every 60 seconds, so you can keep it open while fixing issues and watch your scores update in real-time.
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Page Audits ━━━ -->
+        <section class="content-section" id="page-audits">
+            <h2><span class="section-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#x1F50D;</span> Page Audits</h2>
+            <p>Page audits are the core feature of Scalyn QA. Each audit runs all six analyzers against a page and produces a detailed checklist of pass/warning/fail items.</p>
+
+            <h3>Audit List View</h3>
+            <p>Navigate to <strong>Scalyn QA &rarr; Page Audits</strong> to see all audited pages in a filterable table. Each row shows the page title, URL, overall score, and category breakdowns.</p>
+
+            <h3>Single Audit View</h3>
+            <p>Click any page to see the full checklist. Each check shows:</p>
+            <div class="check-list-visual">
+                <div class="check-list-row">
+                    <span class="name"><span class="check-dot dot-pass">&check;</span> Meta title present (58 chars)</span>
+                    <span class="badge badge-green">Pass</span>
+                </div>
+                <div class="check-list-row">
+                    <span class="name"><span class="check-dot dot-warn">!</span> Meta description too short (95 chars)</span>
+                    <span class="badge badge-amber">Warning</span>
+                </div>
+                <div class="check-list-row">
+                    <span class="name"><span class="check-dot dot-fail">&times;</span> Broken link detected: /old-page (404)</span>
+                    <span class="badge badge-red">Critical</span>
+                </div>
+                <div class="check-list-row">
+                    <span class="name"><span class="check-dot dot-pass">&check;</span> H1 heading present</span>
+                    <span class="badge badge-green">Pass</span>
+                </div>
+            </div>
+
+            <h3>Available Actions</h3>
+            <div class="feature-grid">
+                <div class="feature-mini">
+                    <h4>&#x1F504; Rescan</h4>
+                    <p>Re-run all analyzers to get fresh results after making fixes.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F9E0; AI Meta</h4>
+                    <p>Generate optimized SEO title and description with one click.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F4DD; Notes</h4>
+                    <p>Add team notes to any audit for collaboration and handoff.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F4F8; Snapshots</h4>
+                    <p>Compare current scores against historical snapshots to track progress.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Scoring ━━━ -->
+        <section class="content-section" id="scoring">
+            <h2><span class="section-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#x1F3AF;</span> Scoring System</h2>
+            <p>Every check is assigned a severity level that determines its weight in the overall score:</p>
+
+            <table>
+                <thead>
+                    <tr><th>Severity</th><th>Weight</th><th>Example</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><span class="badge badge-red">Critical</span></td><td>3x</td><td>Broken links, missing H1, 404 errors</td></tr>
+                    <tr><td><span class="badge badge-amber">Warning</span></td><td>2x</td><td>Short meta description, missing lazy loading</td></tr>
+                    <tr><td><span class="badge badge-purple">Info</span></td><td>1x</td><td>Valid mailto links, working external links</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Category Weights</h3>
+            <p>The overall score is a weighted average of three categories:</p>
+            <table>
+                <thead>
+                    <tr><th>Category</th><th>Weight</th><th>Covers</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>SEO</strong></td><td>40%</td><td>Meta tags, schema, canonicals, keyword density</td></tr>
+                    <tr><td><strong>Content</strong></td><td>35%</td><td>Word count, readability, heading structure, punctuation</td></tr>
+                    <tr><td><strong>Functionality</strong></td><td>25%</td><td>Links, images, forms, buttons, accessibility</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Status Thresholds</h3>
+            <p>Configurable in <strong>Settings &rarr; General</strong>:</p>
+            <div class="feature-grid">
+                <div class="feature-mini" style="border-left: 3px solid var(--success);">
+                    <h4>&#x1F7E2; Green (Good)</h4>
+                    <p>Score &ge; 80 (default). Page is in great shape.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid var(--warning);">
+                    <h4>&#x1F7E1; Yellow (Needs Work)</h4>
+                    <p>Score &ge; 50 (default). Some issues to address.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Launch Checklist ━━━ -->
+        <section class="content-section" id="launch-checklist">
+            <h2><span class="section-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);">&#x1F680;</span> Launch Checklist</h2>
+            <p>The launch readiness checklist runs 40+ server and site-level checks organized into six categories. Navigate to <strong>Scalyn QA &rarr; Launch Checklist</strong> and click <strong>Run Scan</strong>.</p>
+
+            <h3>Categories</h3>
+            <table>
+                <thead>
+                    <tr><th>Category</th><th>Checks</th><th>Examples</th></tr>
+                </thead>
+                <tbody>
+                    <tr><td><strong>SEO</strong></td><td>13</td><td>XML sitemap, robots.txt, breadcrumbs, local schema, llms.txt</td></tr>
+                    <tr><td><strong>Analytics</strong></td><td>2</td><td>GA4 configured, GTM installed</td></tr>
+                    <tr><td><strong>Technical</strong></td><td>12</td><td>SSL, debug off, PHP version, memory, favicon</td></tr>
+                    <tr><td><strong>Content</strong></td><td>7</td><td>Contact page, privacy policy, default content removed</td></tr>
+                    <tr><td><strong>Plugin Health</strong></td><td>6</td><td>Security, cache, backup, SMTP, image optimization plugins</td></tr>
+                    <tr><td><strong>Settings</strong></td><td>3</td><td>Non-default admin user, timezone, comments disabled</td></tr>
+                </tbody>
+            </table>
+
+            <div class="callout callout-tip">
+                <span class="callout-icon">&#x1F527;</span>
+                <div class="callout-content">
+                    <strong>Auto-Fix</strong>
+                    Some checks support automatic fixes. Look for the "Auto-Fix" button next to eligible checks to resolve issues with one click.
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ SEO Analyzer ━━━ -->
+        <section class="content-section" id="seo-analyzer">
+            <h2><span class="section-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x1F50E;</span> SEO Analyzer</h2>
+            <p>The SEO analyzer runs 13+ checks on every page, covering the fundamentals that search engines care about.</p>
+
+            <h3>Checks Performed</h3>
+            <div class="feature-grid">
+                <div class="feature-mini"><h4>Meta Title</h4><p>Present, within 50-60 characters optimal range.</p></div>
+                <div class="feature-mini"><h4>Meta Description</h4><p>Present, within 120-160 characters optimal range.</p></div>
+                <div class="feature-mini"><h4>Open Graph Tags</h4><p>OG title, description, and image for social sharing.</p></div>
+                <div class="feature-mini"><h4>Canonical URL</h4><p>Correct canonical tag to prevent duplicate content.</p></div>
+                <div class="feature-mini"><h4>Schema Markup</h4><p>JSON-LD structured data detection and validation.</p></div>
+                <div class="feature-mini"><h4>Keyword Density</h4><p>Extracts keywords from title/description and analyzes density.</p></div>
+                <div class="feature-mini"><h4>Internal Links</h4><p>Recommends internal linking opportunities.</p></div>
+                <div class="feature-mini"><h4>Indexation Status</h4><p>Verifies the page isn't accidentally set to noindex.</p></div>
+            </div>
+        </section>
+
+        <!-- ━━━ Content Analyzer ━━━ -->
+        <section class="content-section" id="content-analyzer">
+            <h2><span class="section-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#x1F4DD;</span> Content Analyzer</h2>
+            <p>Ensures your content meets quality standards for readability and structure.</p>
+
+            <h3>Checks Performed</h3>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Word Count</h4>
+                        <p>Validates minimum word count (default: 300 words, configurable in Settings).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Heading Capitalization</h4>
+                        <p>Warns if headings start with lowercase letters instead of title case.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Paragraph Punctuation</h4>
+                        <p>Ensures paragraphs end with proper punctuation (. ! ? : ; etc.).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Short Paragraphs</h4>
+                        <p>Flags 4+ consecutive single-sentence paragraphs that may indicate poor formatting.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Readability Score</h4>
+                        <p>Integrates with Yoast/Rank Math scores, or falls back to Flesch Reading Ease (target: 60+).</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Link Checker ━━━ -->
+        <section class="content-section" id="link-checker">
+            <h2><span class="section-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#x1F517;</span> Link Checker</h2>
+            <p>Comprehensive link validation with intelligent features built for real-world WordPress sites.</p>
+
+            <h3>Link Types Detected</h3>
+            <table>
+                <thead><tr><th>Type</th><th>Validation</th></tr></thead>
+                <tbody>
+                    <tr><td>Internal links</td><td>HTTP HEAD request with status code check</td></tr>
+                    <tr><td>External links</td><td>HTTP HEAD (fallback to GET), 10s timeout</td></tr>
+                    <tr><td>Anchor links (#)</td><td>Verifies target ID exists in page content via DOMXPath</td></tr>
+                    <tr><td>Mailto links</td><td>Regex validation of email format</td></tr>
+                    <tr><td>Tel links</td><td>Phone number format validation</td></tr>
+                    <tr><td>Download links</td><td>File existence verification</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Smart Features</h3>
+            <div class="feature-grid">
+                <div class="feature-mini">
+                    <h4>&#x1F6E1; SSRF Protection</h4>
+                    <p>Blocks private IP ranges and prevents DNS rebinding attacks during link checking.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F916; Bot Awareness</h4>
+                    <p>Skips validation for sites known to block bots (Facebook, LinkedIn, Instagram).</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F4BE; 24h Caching</h4>
+                    <p>Results cached via WordPress transients to avoid re-checking identical URLs.</p>
+                </div>
+                <div class="feature-mini">
+                    <h4>&#x1F522; Rate Limited</h4>
+                    <p>Max 50 links per scan to prevent server overload on link-heavy pages.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Image Analyzer ━━━ -->
+        <section class="content-section" id="image-analyzer">
+            <h2><span class="section-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#x1F5BC;</span> Image Optimization</h2>
+            <p>Catches image issues that hurt Core Web Vitals and user experience.</p>
+
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Broken Images</h4>
+                        <p>Validates <code>src</code> attributes and resolves local paths to the filesystem to confirm images exist.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Missing Dimensions</h4>
+                        <p>Warns if <code>width</code> and <code>height</code> attributes are missing &mdash; these are critical for preventing Cumulative Layout Shift (CLS).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Lazy Loading</h4>
+                        <p>Requires <code>loading="lazy"</code> on all images except the first (which should load eagerly for Largest Contentful Paint).</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>File Size</h4>
+                        <p>Flags images exceeding your configured limit (default: 900 KB). Configurable in Settings &rarr; Page Audits.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Heading Analyzer ━━━ -->
+        <section class="content-section" id="heading-analyzer">
+            <h2><span class="section-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x1F524;</span> Heading Structure</h2>
+            <p>Proper heading hierarchy is crucial for both SEO and accessibility.</p>
+
+            <div class="feature-grid">
+                <div class="feature-mini" style="border-left: 3px solid var(--success);">
+                    <h4>H1 Validation</h4>
+                    <p>Ensures exactly one H1 per page. Detects both content H1s and theme-rendered title H1s via frontend request.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid var(--warning);">
+                    <h4>Hierarchy Check</h4>
+                    <p>Warns on skipped levels (e.g., H1 &rarr; H3 without H2). Headings should follow a logical order.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid var(--danger);">
+                    <h4>Empty Headings</h4>
+                    <p>Flags empty heading tags as critical issues &mdash; they confuse screen readers and hurt SEO.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid var(--accent);">
+                    <h4>Elementor Support</h4>
+                    <p>Full support for headings inside Elementor page builder content.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Form Analyzer ━━━ -->
+        <section class="content-section" id="form-analyzer">
+            <h2><span class="section-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#x1F4CB;</span> Forms & Buttons</h2>
+            <p>Catches accessibility and usability issues in forms and interactive elements.</p>
+
+            <div class="feature-grid">
+                <div class="feature-mini"><h4>Empty Buttons</h4><p>Validates all buttons have visible text or <code>aria-label</code> attributes (WCAG compliance).</p></div>
+                <div class="feature-mini"><h4>Placeholder Links</h4><p>Warns about non-functional <code>href="#"</code> or <code>javascript:void(0)</code> links.</p></div>
+                <div class="feature-mini"><h4>Form Submit Buttons</h4><p>Validates every <code>&lt;form&gt;</code> element contains a submit button.</p></div>
+                <div class="feature-mini"><h4>Popup Triggers</h4><p>Validates popup trigger elements reference valid popup targets, including Elementor popups.</p></div>
+            </div>
+        </section>
+
+        <!-- ━━━ AI Setup ━━━ -->
+        <section class="content-section" id="ai-setup">
+            <h2><span class="section-icon" style="background:rgba(16,185,129,0.1);color:var(--success);">&#x1F9E0;</span> AI Setup</h2>
+            <p>Connect an AI provider to generate optimized SEO metadata for your pages. Navigate to <strong>Settings &rarr; AI Providers</strong>.</p>
+
+            <h3>Supported Providers</h3>
+            <table>
+                <thead><tr><th>Provider</th><th>Recommended Model</th><th>Notes</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>OpenAI</strong></td><td>gpt-4o</td><td>Best balance of quality and speed</td></tr>
+                    <tr><td><strong>Google Gemini</strong></td><td>gemini-2.0-flash</td><td>Fast and cost-effective</td></tr>
+                    <tr><td><strong>Anthropic Claude</strong></td><td>claude-3-5-sonnet</td><td>Excellent for nuanced writing</td></tr>
+                    <tr><td><strong>OpenRouter</strong></td><td>Varies</td><td>Access multiple providers via single API</td></tr>
+                    <tr><td><strong>Custom Endpoint</strong></td><td>Any</td><td>BYO endpoint with custom headers</td></tr>
+                </tbody>
+            </table>
+
+            <h3>Configuration Steps</h3>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Select your provider</h4>
+                        <p>Choose your primary AI provider from the dropdown menu.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Enter your API key</h4>
+                        <p>Paste your API key. It will be stored with AES-256-CBC encryption &mdash; never in plain text.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Test the connection</h4>
+                        <p>Click <strong>Test Connection</strong> for instant validation feedback.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Set a daily rate limit</h4>
+                        <p>Configure the maximum AI requests per day to control API costs.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="callout callout-info">
+                <span class="callout-icon">&#x1F504;</span>
+                <div class="callout-content">
+                    <strong>Automatic Fallback</strong>
+                    Configure a secondary provider. If your primary provider fails (rate limit, downtime), the system automatically retries with the fallback provider.
+                </div>
+            </div>
+
+            <h3>Using AI Meta Generation</h3>
+            <p>Once configured, go to any <strong>Page Audit &rarr; Single View</strong> and click the <strong>Generate Meta</strong> button. You can:</p>
+            <ul style="margin: 0.75rem 0 1rem 1.5rem; color: var(--gray-600); font-size: 0.9rem;">
+                <li>Generate title only, description only, or both</li>
+                <li>Preview the AI output before applying</li>
+                <li>Apply directly to your active SEO plugin (Yoast, Rank Math, AIOSEO, or SEOPress)</li>
+                <li>View generation logs with token usage and response times</li>
+            </ul>
+        </section>
+
+        <!-- ━━━ SEO Plugins ━━━ -->
+        <section class="content-section" id="seo-plugins">
+            <h2><span class="section-icon" style="background:rgba(245,158,11,0.1);color:var(--warning);">&#x1F50C;</span> SEO Plugin Integration</h2>
+            <p>Scalyn QA automatically detects your active SEO plugin and integrates with it for metadata reading and writing.</p>
+
+            <div class="feature-grid">
+                <div class="feature-mini" style="border-left: 3px solid #a855f7;">
+                    <h4>Yoast SEO</h4>
+                    <p>Read/write meta titles and descriptions. Import readability scores.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid #6366f1;">
+                    <h4>Rank Math</h4>
+                    <p>Full integration with Rank Math metadata fields and content AI scores.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid #06b6d4;">
+                    <h4>AIOSEO</h4>
+                    <p>All in One SEO Pack metadata sync support.</p>
+                </div>
+                <div class="feature-mini" style="border-left: 3px solid #10b981;">
+                    <h4>SEOPress</h4>
+                    <p>SEOPress metadata field mapping and sync.</p>
+                </div>
+            </div>
+
+            <div class="callout callout-warning">
+                <span class="callout-icon">&#x26A0;</span>
+                <div class="callout-content">
+                    <strong>No SEO Plugin?</strong>
+                    Scalyn QA works without an SEO plugin, but AI-generated metadata can only be applied if a supported SEO plugin is active. The analyzers will still check HTML meta tags regardless.
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Reports ━━━ -->
+        <section class="content-section" id="reports">
+            <h2><span class="section-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x1F4C4;</span> Report Generation</h2>
+            <p>Generate branded, client-ready QA reports that you can print to PDF.</p>
+
+            <h3>How to Generate</h3>
+            <div class="steps-list">
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Configure report settings</h4>
+                        <p>Go to <strong>Settings &rarr; Generate Report</strong>. Upload your company logo, toggle sections, and set the max pages to include.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Click Generate Report</h4>
+                        <p>A new browser tab opens with a self-contained HTML report.</p>
+                    </div>
+                </div>
+                <div class="step-item">
+                    <div class="step-item-content">
+                        <h4>Print to PDF</h4>
+                        <p>Use your browser's print dialog (<code>Ctrl+P</code> / <code>Cmd+P</code>) to save as PDF. The report is print-optimized.</p>
+                    </div>
+                </div>
+            </div>
+
+            <h3>Report Sections</h3>
+            <ul style="margin: 0.75rem 0 1rem 1.5rem; color: var(--gray-600); font-size: 0.9rem;">
+                <li>Site metadata (name, URL, WP version, PHP version, generation timestamp)</li>
+                <li>Project score summary with visual indicators</li>
+                <li>Top 15 failing issues across the entire site</li>
+                <li>Launch checklist results with per-category scores</li>
+                <li>Per-page scores (up to 500 pages)</li>
+                <li>Custom company logo branding</li>
+            </ul>
+        </section>
+
+        <!-- ━━━ Inspector ━━━ -->
+        <section class="content-section" id="inspector">
+            <h2><span class="section-icon" style="background:rgba(6,182,212,0.1);color:var(--accent);">&#x1F441;</span> Frontend Inspector</h2>
+            <p>The visual inspector is a frontend panel that overlays on your site when viewing it while logged in. It highlights issues directly on the page elements.</p>
+
+            <h3>Features</h3>
+            <div class="feature-grid">
+                <div class="feature-mini"><h4>&#x1F3A8; Element Highlighting</h4><p>Click an issue to highlight the corresponding DOM element on the page.</p></div>
+                <div class="feature-mini"><h4>&#x1F4CC; Annotation Badges</h4><p>Visual badges on headings and images showing their audit status.</p></div>
+                <div class="feature-mini"><h4>&#x1F5C2; Docked or Floating</h4><p>Use as a sidebar dock or a draggable floating panel.</p></div>
+                <div class="feature-mini"><h4>&#x1F6AB; Inline Ignore</h4><p>Ignore specific checks directly from the frontend panel.</p></div>
+            </div>
+
+            <div class="callout callout-tip">
+                <span class="callout-icon">&#x1F4A1;</span>
+                <div class="callout-content">
+                    <strong>Toggle Visibility</strong>
+                    The inspector is enabled via <strong>Settings &rarr; General &rarr; Show Toolbar</strong>. Once enabled, look for the Scalyn QA button in the admin toolbar when viewing your site's frontend.
+                </div>
+            </div>
+        </section>
+
+        <!-- ━━━ Ignore Rules ━━━ -->
+        <section class="content-section" id="ignore-rules">
+            <h2><span class="section-icon" style="background:rgba(239,68,68,0.1);color:var(--danger);">&#x1F6AB;</span> Ignore Rules</h2>
+            <p>Not every check applies to every page. Ignore rules let you suppress specific checks without affecting your overall methodology.</p>
+
+            <h3>Scope Options</h3>
+            <table>
+                <thead><tr><th>Scope</th><th>Effect</th><th>Use Case</th></tr></thead>
+                <tbody>
+                    <tr><td><strong>Per-Post</strong></td><td>Ignores a check for one specific page</td><td>Landing page that intentionally has no H1</td></tr>
+                    <tr><td><strong>Global</strong></td><td>Ignores a check across all pages</td><td>You don't care about keyword density</td></tr>
+                    <tr><td><strong>Context: Audit</strong></td><td>Only ignored in page audits</td><td>Different rules for audits vs. launch</td></tr>
+                    <tr><td><strong>Context: Launch</strong></td><td>Only ignored in launch checklist</td><td>Skip a launch check that doesn't apply</td></tr>
+                </tbody>
+            </table>
+        </section>
+
+        <!-- ━━━ FAQ ━━━ -->
+        <section class="content-section" id="faq">
+            <h2><span class="section-icon" style="background:rgba(99,102,241,0.1);color:var(--primary);">&#x2753;</span> FAQ</h2>
+
+            <div class="faq-list">
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Does the plugin slow down my site?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            No. Scalyn QA only runs in the WordPress admin area. Scans are triggered manually or on post save &mdash; nothing runs on the frontend for visitors. The frontend inspector only loads for logged-in admins.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Do I need an AI API key?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            No. AI metadata generation is completely optional. All 6 analyzers, the launch checklist, reports, and the frontend inspector work without any AI provider configured.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Can I use this on client sites?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Absolutely. Scalyn QA was built specifically for agencies managing multiple WordPress sites. The report generator produces branded, client-ready PDF reports with your company logo.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        What SEO plugins are supported?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Yoast SEO, Rank Math, All in One SEO (AIOSEO), and SEOPress. The plugin auto-detects which one is active and integrates accordingly for metadata reading and writing.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        Does it work with Elementor?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Yes. Scalyn QA has full Elementor support. It extracts content via Elementor's builder API, validates headings and images within Elementor content, and even checks Elementor popup triggers.
+                        </div>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-question">
+                        How do I uninstall cleanly?
+                        <span class="arrow">&#x25BC;</span>
+                    </div>
+                    <div class="faq-answer">
+                        <div class="faq-answer-inner">
+                            Go to <strong>Settings &rarr; Advanced</strong> and enable "Delete all plugin data on uninstall." Then deactivate and delete the plugin &mdash; all options, post meta, and transients will be removed.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Bottom CTA -->
+        <div style="text-align:center; padding: 3rem 0 2rem; border-top: 1px solid var(--gray-200); margin-top: 2rem;">
+            <p style="color: var(--gray-500); margin-bottom: 1rem; font-size: 0.95rem;">Ready to level up your WordPress QA workflow?</p>
+            <a href="https://drive.google.com/drive/folders/1VcSwGnCn_WPCgoGJRqeQIPtGVFvQLYNf?usp=sharing" target="_blank" style="display:inline-flex;align-items:center;gap:0.5rem;background:var(--primary);color:var(--white);padding:0.8rem 2rem;border-radius:12px;text-decoration:none;font-weight:700;font-size:0.95rem;transition:all 0.3s;">
+                <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4m4-5l5 5 5-5m-5 5V3"/></svg>
+                Download Plugin
+            </a>
+        </div>
+    </main>
+</div>
+
+<!-- Mobile sidebar toggle -->
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle navigation">&#x2630;</button>
+
+<script>
+    // FAQ accordion
+    document.querySelectorAll('.faq-question').forEach(q => {
+        q.addEventListener('click', () => {
+            const item = q.parentElement;
+            item.classList.toggle('open');
+        });
+    });
+
+    // Active sidebar link on scroll
+    const sections = document.querySelectorAll('.content-section');
+    const sidebarLinks = document.querySelectorAll('.sidebar-link');
+
+    const sectionObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const id = entry.target.id;
+                sidebarLinks.forEach(link => {
+                    link.classList.toggle('active', link.getAttribute('href') === '#' + id);
+                });
+            }
+        });
+    }, { threshold: 0.2, rootMargin: '-80px 0px -60% 0px' });
+
+    sections.forEach(section => sectionObserver.observe(section));
+
+    // Mobile sidebar
+    const sidebarToggle = document.getElementById('sidebarToggle');
+    const sidebar = document.getElementById('sidebar');
+    sidebarToggle.addEventListener('click', () => {
+        sidebar.classList.toggle('mobile-open');
+    });
+
+    // Sidebar search
+    const searchInput = document.getElementById('sidebarSearch');
+    searchInput.addEventListener('input', (e) => {
+        const q = e.target.value.toLowerCase();
+        sidebarLinks.forEach(link => {
+            const text = link.textContent.toLowerCase();
+            link.style.display = text.includes(q) ? '' : 'none';
+        });
+    });
+
+    // Smooth scroll for sidebar links
+    sidebarLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            const target = document.querySelector(link.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    });
+</script>
+
+</body>
+</html>

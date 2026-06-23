@@ -1,0 +1,15 @@
+{
+  "name": "scalyn-qa-assistant",
+  "version": "1.0.0",
+  "description": "Scalyn Website QA & SEO Assistant WordPress Plugin",
+  "scripts": {
+    "build:css": "npx tailwindcss -i ./src/css/admin.css -o ./assets/css/admin.css --minify",
+    "watch:css": "npx tailwindcss -i ./src/css/admin.css -o ./assets/css/admin.css --watch",
+    "build": "npm run build:css"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4",
+    "postcss": "^8.4",
+    "autoprefixer": "^10.4"
+  }
+}

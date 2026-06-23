@@ -1,0 +1,22 @@
+# Dependencies
+/node_modules/
+
+# IDE
+.idea/
+.vscode/
+
+# Claude Code local settings
+.claude/settings.local.json
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build artifacts (keep compiled CSS in repo)
+# /assets/css/admin.css  <-- committed
+
+# Logs
+*.log
+debug.log

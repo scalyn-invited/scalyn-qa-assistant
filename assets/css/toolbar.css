@@ -1,0 +1,79 @@
+/* ==========================================================================
+   Scalyn QA Assistant — Admin Toolbar Styles
+   Integrates with the WordPress admin bar (#wpadminbar).
+   Class names match class-toolbar.php output.
+   ========================================================================== */
+
+/* ---------- Toolbar badge (score circle) ---------- */
+#wpadminbar .scalyn-qa-toolbar-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+  color: #fff;
+  background-color: #94a3b8;
+  margin-right: 4px;
+  vertical-align: middle;
+}
+
+#wpadminbar .scalyn-qa-badge--green {
+  background-color: #10B981;
+}
+
+#wpadminbar .scalyn-qa-badge--yellow {
+  background-color: #F59E0B;
+  color: #1a1a1a;
+}
+
+#wpadminbar .scalyn-qa-badge--red {
+  background-color: #EF4444;
+}
+
+#wpadminbar .scalyn-qa-badge--gray {
+  background-color: #94a3b8;
+}
+
+/* ---------- Toolbar label text ---------- */
+#wpadminbar .scalyn-qa-toolbar-label {
+  font-size: 13px;
+  color: #a0a5aa;
+  vertical-align: middle;
+}
+
+#wpadminbar .scalyn-qa-toolbar-node .ab-item {
+  display: flex !important;
+  align-items: center !important;
+  gap: 2px;
+}
+
+/* ---------- Submenu items ---------- */
+#wpadminbar .scalyn-qa-toolbar-node .ab-submenu .ab-item {
+  font-size: 12px !important;
+  color: #a0a5aa !important;
+}
+
+#wpadminbar .scalyn-qa-toolbar-node .ab-submenu .ab-item:hover {
+  color: #00b9eb !important;
+}
+
+/* ---------- Rescan link ---------- */
+#wpadminbar .scalyn-qa-rescan-link .ab-item {
+  color: #4F46E5 !important;
+  font-weight: 500;
+}
+
+#wpadminbar .scalyn-qa-rescan-link .ab-item:hover {
+  color: #4338CA !important;
+}
+
+/* ---------- Responsive ---------- */
+@media screen and (max-width: 782px) {
+  #wpadminbar .scalyn-qa-toolbar-label {
+    display: none;
+  }
+}
