@@ -100,7 +100,7 @@ final class GitHub_Updater {
 		$this->current_version = SCALYN_QA_VERSION;
 
 		$settings         = get_option( 'scalyn_qa_settings', [] );
-		$this->repo_owner = ! empty( $settings['github_owner'] ) ? $settings['github_owner'] : 'toxickim24';
+		$this->repo_owner = ! empty( $settings['github_owner'] ) ? $settings['github_owner'] : 'scalyn-invited';
 		$this->repo_name  = ! empty( $settings['github_repo'] ) ? $settings['github_repo'] : 'scalyn-qa-assistant';
 	}
 

@@ -19,7 +19,7 @@ See [IMPLEMENTATION.md](IMPLEMENTATION.md) for full architecture, feature list, 
 
 1. Download or clone the repository:
    ```bash
-   git clone https://github.com/toxickim24/scalyn-qa-assistant.git
+   git clone https://github.com/scalyn-invited/scalyn-qa-assistant.git
    cd scalyn-qa-assistant
    composer install --no-dev --optimize-autoloader
    ```
@@ -32,7 +32,7 @@ See [IMPLEMENTATION.md](IMPLEMENTATION.md) for full architecture, feature list, 
 
 1. Download or clone the repository:
    ```bash
-   git clone https://github.com/toxickim24/scalyn-qa-assistant.git
+   git clone https://github.com/scalyn-invited/scalyn-qa-assistant.git
    cd scalyn-qa-assistant
    composer install --no-dev --optimize-autoloader
    ```

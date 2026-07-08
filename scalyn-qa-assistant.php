@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name: Scalyn QA Assistant
- * Plugin URI:  https://github.com/toxickim24/scalyn-qa-assistant
+ * Plugin URI:  https://github.com/scalyn-invited/scalyn-qa-assistant
  * Description: Website QA, SEO validation, and launch readiness tool for WordPress.
  * Version:     1.4.7
  * Author:      Scalyn

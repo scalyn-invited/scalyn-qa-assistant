@@ -49,7 +49,7 @@ final class Activator {
 			'delete_data_on_uninstall' => false,
 			'max_ai_requests_per_day'  => 0,
 			'debug_mode'               => false,
-			'github_owner'             => 'toxickim24',
+			'github_owner'             => 'scalyn-invited',
 			'github_repo'              => 'scalyn-qa-assistant',
 			'github_token'             => '',
 		];

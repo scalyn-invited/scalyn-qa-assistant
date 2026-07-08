@@ -87,8 +87,8 @@ $max_ai_requests_per_day  = isset( $settings['max_ai_requests_per_day'] ) ? (int
 				<th scope="row"><?php esc_html_e( 'Repository Owner', 'scalyn-qa-assistant' ); ?></th>
 				<td>
 					<input type="text" id="scalyn-github-owner" class="scalyn-input"
-					       value="<?php echo esc_attr( $settings['github_owner'] ?? 'toxickim24' ); ?>"
-					       placeholder="toxickim24">
+					       value="<?php echo esc_attr( $settings['github_owner'] ?? 'scalyn-invited' ); ?>"
+					       placeholder="scalyn-invited">
 				</td>
 			</tr>
 			<tr>

@@ -1302,14 +1302,14 @@
                 var repoEl = document.getElementById('scalyn-github-repo');
                 var tokenEl = document.getElementById('scalyn-github-token');
 
-                var owner = ownerEl ? ownerEl.value.trim() : 'toxickim24';
+                var owner = ownerEl ? ownerEl.value.trim() : 'scalyn-invited';
                 var repo = repoEl ? repoEl.value.trim() : 'scalyn-qa-assistant';
                 var token = tokenEl ? tokenEl.value.trim() : '';
 
                 fetchApi('updates/save-token', {
                     method: 'POST',
                     body: JSON.stringify({
-                        github_owner: owner || 'toxickim24',
+                        github_owner: owner || 'scalyn-invited',
                         github_repo: repo || 'scalyn-qa-assistant',
                         github_token: token,
                     }),
