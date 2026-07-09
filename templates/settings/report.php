@@ -32,13 +32,58 @@ if ( $company_logo_id > 0 ) {
 	}
 }
 
-// Detect site logo from Customizer (custom_logo theme mod).
-$site_logo_id  = (int) get_theme_mod( 'custom_logo', 0 );
+// Detect site logo from multiple sources.
+$site_logo_id  = 0;
 $site_logo_url = '';
+
+// 1. WordPress core: custom_logo theme mod (Appearance → Customize → Site Identity).
+$site_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
+
+// 2. Block themes: site_logo option (Site Editor → Site Logo block).
+if ( 0 === $site_logo_id ) {
+	$site_logo_id = (int) get_option( 'site_logo', 0 );
+}
+
+// 3. Astra theme: custom header logo.
+if ( 0 === $site_logo_id && defined( 'ASTRA_THEME_VERSION' ) ) {
+	$astra_logo = get_theme_mod( 'custom_logo', 0 );
+	if ( ! $astra_logo ) {
+		$astra_settings = get_option( 'astra-settings', array() );
+		if ( is_array( $astra_settings ) && ! empty( $astra_settings['custom_logo'] ) ) {
+			$site_logo_id = (int) $astra_settings['custom_logo'];
+		}
+	}
+}
+
+// 4. OceanWP theme.
+if ( 0 === $site_logo_id && defined( 'OCEANWP_THEME_DIR' ) ) {
+	$ocean_logo = get_theme_mod( 'ocean_logo', '' );
+	if ( is_numeric( $ocean_logo ) && (int) $ocean_logo > 0 ) {
+		$site_logo_id = (int) $ocean_logo;
+	}
+}
+
+// 5. GeneratePress theme.
+if ( 0 === $site_logo_id && defined( 'GENERATE_VERSION' ) ) {
+	$gp_logo = get_theme_mod( 'custom_logo', 0 );
+	if ( ! $gp_logo ) {
+		$gp_settings = get_option( 'generate_settings', array() );
+		if ( is_array( $gp_settings ) && ! empty( $gp_settings['logo'] ) ) {
+			$gp_logo_url = $gp_settings['logo'];
+			// GeneratePress stores the URL, try to find the attachment ID.
+			if ( is_string( $gp_logo_url ) && '' !== $gp_logo_url ) {
+				$site_logo_id = (int) attachment_url_to_postid( $gp_logo_url );
+			}
+		}
+	}
+}
+
 if ( $site_logo_id > 0 ) {
 	$url = wp_get_attachment_image_url( $site_logo_id, 'medium' );
 	if ( $url ) {
 		$site_logo_url = $url;
+	} else {
+		$site_logo_id = 0; // Reset if attachment not found.
 	}
 }
 
