@@ -528,9 +528,8 @@
                 return;
             }
 
-            fetchApi('scan', {
+            fetchApi('scan/' + postIds[index], {
                 method: 'POST',
-                body: JSON.stringify({ post_id: postIds[index] }),
             })
                 .then(function (response) {
                     if (response.success && response.data) {
@@ -660,9 +659,8 @@
                 return;
             }
 
-            fetchApi('scan', {
+            fetchApi('scan/' + postIds[index], {
                 method: 'POST',
-                body: JSON.stringify({ post_id: postIds[index] }),
             })
                 .then(function (response) {
                     if (response.success && response.data) {
