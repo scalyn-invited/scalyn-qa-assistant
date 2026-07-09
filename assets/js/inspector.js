@@ -439,9 +439,12 @@
             scannedAt = d.toLocaleString();
         }
 
+        var speedUrl = 'https://pagespeed.web.dev/analysis?url=' + encodeURIComponent(window.location.href);
+
         return '<div class="sqi-footer">' +
             '<div class="sqi-footer__row">' +
             '<label class="sqi-footer__toggle"><input type="checkbox" id="sqi-highlight-toggle" checked> Highlight issues</label>' +
+            '<a href="' + speedUrl + '" target="_blank" rel="noopener noreferrer" class="sqi-footer__link" title="Test page speed on PageSpeed Insights" style="font-size:11px;color:var(--sqi-blue,#4a90d9);text-decoration:none;margin-left:auto;">&#9889; Test Speed</a>' +
             (scannedAt ? '<span class="sqi-footer__meta">' + esc(scannedAt) + '</span>' : '') +
             '</div>' +
             '</div>';

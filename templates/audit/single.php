@@ -191,6 +191,10 @@ $total_pass   = $cat_counts['seo']['pass'] + $cat_counts['content']['pass'] + $c
 					<span class="dashicons dashicons-external" aria-hidden="true"></span>
 					<?php esc_html_e( 'View Page', 'scalyn-qa-assistant' ); ?>
 				</a>
+				<a href="<?php echo esc_url( 'https://pagespeed.web.dev/analysis?url=' . rawurlencode( $permalink ) ); ?>" class="scalyn-btn scalyn-btn--ghost" target="_blank" rel="noopener noreferrer">
+					<span class="dashicons dashicons-performance" aria-hidden="true"></span>
+					<?php esc_html_e( 'Test Speed', 'scalyn-qa-assistant' ); ?>
+				</a>
 			<?php endif; ?>
 		</div>
 	</div>

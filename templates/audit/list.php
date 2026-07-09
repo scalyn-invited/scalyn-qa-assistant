@@ -261,6 +261,12 @@ $sum_total      = $sum_green + $sum_yellow + $sum_red + $sum_unscanned;
 									>
 										<?php esc_html_e( 'Rescan', 'scalyn-qa-assistant' ); ?>
 									</button>
+									<?php $row_permalink = get_permalink( $post_id ); ?>
+									<?php if ( $row_permalink ) : ?>
+									<a href="<?php echo esc_url( 'https://pagespeed.web.dev/analysis?url=' . rawurlencode( $row_permalink ) ); ?>" class="scalyn-btn scalyn-btn--small scalyn-btn--ghost" target="_blank" rel="noopener noreferrer" title="<?php esc_attr_e( 'Test Speed', 'scalyn-qa-assistant' ); ?>">
+										<span class="dashicons dashicons-performance" aria-hidden="true"></span>
+									</a>
+									<?php endif; ?>
 								</div>
 							</td>
 						</tr>
