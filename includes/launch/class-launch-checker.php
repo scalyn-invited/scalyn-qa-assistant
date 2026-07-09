@@ -65,6 +65,7 @@ class Launch_Checker {
 		'instant_indexing'         => 'Enable instant indexing',
 		'contact_page_exists'      => 'Create a Contact page',
 		'robots_txt'               => 'Fix robots.txt',
+		'timezone_set'             => 'Set timezone from browser',
 		// Module toggles — kept callable but buttons are controlled by check methods via quick_fix.
 		'breadcrumbs_enabled'      => 'Enable breadcrumbs',
 		'redirect_manager'         => 'Enable redirect manager',
@@ -118,6 +119,7 @@ class Launch_Checker {
 			'four_oh_four_monitor'     => $this->fix_404_monitor(),
 			'instant_indexing'         => $this->fix_instant_indexing(),
 			'robots_txt'               => $this->fix_robots_txt(),
+			'timezone_set'             => $this->fix_timezone( $content ),
 			'contact_page_exists'      => $this->fix_contact_page( $content ),
 			'cornerstone_content'      => $this->fix_cornerstone_content( $content ),
 			'local_business_schema'    => $this->fix_local_business_schema( $content ),
@@ -3021,10 +3023,10 @@ HTML;
 				id:        'timezone_set',
 				label:     __( 'Timezone', 'scalyn-qa-assistant' ),
 				status:    'warning',
-				message:   __( 'Timezone is UTC+0 (may be unconfigured). Go to Settings → General and select your city timezone.', 'scalyn-qa-assistant' ),
+				message:   __( 'Timezone is UTC+0 (may be unconfigured). Go to Settings → General and select your city timezone, or use Auto Fix.', 'scalyn-qa-assistant' ),
 				category:  'functionality',
 				severity:  'info',
-				quick_fix: null,
+				quick_fix: 'auto_fix',
 				tooltip:   __( 'WordPress defaults to UTC+0. If your site is not in that timezone, scheduled posts and timestamps will be wrong.', 'scalyn-qa-assistant' ),
 			);
 		}
@@ -3042,6 +3044,41 @@ HTML;
 			severity:  'info',
 			quick_fix: null,
 			tooltip:   __( 'Timezone offset is configured. A named timezone (e.g. "America/New_York") is preferred for DST handling.', 'scalyn-qa-assistant' ),
+		);
+	}
+
+	/**
+	 * Fix: set the timezone from the browser-detected IANA timezone.
+	 *
+	 * The JS front-end sends Intl.DateTimeFormat().resolvedOptions().timeZone
+	 * (e.g. "America/New_York") as the content parameter.
+	 *
+	 * @since 1.3.0
+	 *
+	 * @param string $content IANA timezone string sent from the browser.
+	 * @return array{success: bool, message: string}
+	 */
+	private function fix_timezone( string $content = '' ): array {
+		$tz = sanitize_text_field( $content );
+
+		if ( '' === $tz || ! in_array( $tz, timezone_identifiers_list(), true ) ) {
+			return array(
+				'success' => false,
+				'message' => __( 'Could not detect a valid timezone from your browser. Please set it manually in Settings → General.', 'scalyn-qa-assistant' ),
+			);
+		}
+
+		update_option( 'timezone_string', $tz );
+		// Clear the numeric offset so WordPress uses the named timezone exclusively.
+		update_option( 'gmt_offset', 0 );
+
+		return array(
+			'success' => true,
+			'message' => sprintf(
+				/* translators: %s: IANA timezone name */
+				__( 'Timezone set to %s.', 'scalyn-qa-assistant' ),
+				esc_html( $tz ),
+			),
 		);
 	}
 

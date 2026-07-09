@@ -566,9 +566,14 @@
                 return;
             }
 
+            var fixPayload = { check_id: checkIds[index] };
+            if (checkIds[index] === 'timezone_set') {
+                try { fixPayload.content = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch (e) {}
+            }
+
             fetchApi('launch/auto-fix', {
                 method: 'POST',
-                body: JSON.stringify({ check_id: checkIds[index] }),
+                body: JSON.stringify(fixPayload),
             })
             .then(function () { ++completed; })
             .catch(function () { ++completed; })
@@ -745,9 +750,20 @@
         var origHtml = btn.innerHTML;
         btn.textContent = 'Fixing...';
 
+        var payload = { check_id: checkId };
+
+        // For timezone fix, detect the browser timezone and send it as content.
+        if (checkId === 'timezone_set') {
+            try {
+                payload.content = Intl.DateTimeFormat().resolvedOptions().timeZone;
+            } catch (e) {
+                // Intl API not available — the server will return an error.
+            }
+        }
+
         fetchApi('launch/auto-fix', {
             method: 'POST',
-            body: JSON.stringify({ check_id: checkId }),
+            body: JSON.stringify(payload),
         })
             .then(function (response) {
                 if (response.success && response.data) {
