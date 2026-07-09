@@ -204,6 +204,17 @@ class Settings_Controller extends REST_Controller {
 			)
 		);
 
+		// GET /settings/detect-logo — detect site logo from theme/options/front page.
+		register_rest_route(
+			$this->namespace,
+			'/settings/detect-logo',
+			array(
+				'methods'             => \WP_REST_Server::READABLE,
+				'callback'            => array( $this, 'detect_site_logo' ),
+				'permission_callback' => array( $this, 'check_manage_permission' ),
+			)
+		);
+
 		// GET & DELETE /debug/log.
 		register_rest_route(
 			$this->namespace,
@@ -1301,6 +1312,183 @@ class Settings_Controller extends REST_Controller {
 		foreach ( $all_plugins as $file => $data ) {
 			if ( str_starts_with( $file, $slug . '/' ) ) {
 				return $file;
+			}
+		}
+
+		return null;
+	}
+
+	// ------------------------------------------------------------------
+	// Logo detection
+	// ------------------------------------------------------------------
+
+	/**
+	 * Detect the site logo from multiple sources.
+	 *
+	 * Checks: custom_logo, site_logo option, theme-specific settings,
+	 * and falls back to scraping the front page for a logo image.
+	 *
+	 * @since 1.4.12
+	 *
+	 * @return \WP_REST_Response
+	 */
+	public function detect_site_logo(): \WP_REST_Response {
+		$logo_id  = 0;
+		$logo_url = '';
+		$source   = '';
+
+		// 1. WordPress core: custom_logo theme mod.
+		$logo_id = (int) get_theme_mod( 'custom_logo', 0 );
+		if ( $logo_id > 0 ) {
+			$source = 'custom_logo';
+		}
+
+		// 2. Block themes: site_logo option.
+		if ( 0 === $logo_id ) {
+			$logo_id = (int) get_option( 'site_logo', 0 );
+			if ( $logo_id > 0 ) {
+				$source = 'site_logo';
+			}
+		}
+
+		// 3. Astra theme.
+		if ( 0 === $logo_id && defined( 'ASTRA_THEME_VERSION' ) ) {
+			$astra_settings = get_option( 'astra-settings', array() );
+			if ( is_array( $astra_settings ) && ! empty( $astra_settings['custom_logo'] ) ) {
+				$logo_id = (int) $astra_settings['custom_logo'];
+				if ( $logo_id > 0 ) {
+					$source = 'astra';
+				}
+			}
+		}
+
+		// 4. OceanWP theme.
+		if ( 0 === $logo_id && defined( 'OCEANWP_THEME_DIR' ) ) {
+			$ocean_logo = get_theme_mod( 'ocean_logo', '' );
+			if ( is_numeric( $ocean_logo ) && (int) $ocean_logo > 0 ) {
+				$logo_id = (int) $ocean_logo;
+				$source  = 'oceanwp';
+			}
+		}
+
+		// 5. GeneratePress theme.
+		if ( 0 === $logo_id && defined( 'GENERATE_VERSION' ) ) {
+			$gp_settings = get_option( 'generate_settings', array() );
+			if ( is_array( $gp_settings ) && ! empty( $gp_settings['logo'] ) && is_string( $gp_settings['logo'] ) ) {
+				$logo_id = (int) attachment_url_to_postid( $gp_settings['logo'] );
+				if ( $logo_id > 0 ) {
+					$source = 'generatepress';
+				}
+			}
+		}
+
+		// Validate attachment exists.
+		if ( $logo_id > 0 ) {
+			$url = wp_get_attachment_image_url( $logo_id, 'medium' );
+			if ( $url ) {
+				$logo_url = $url;
+			} else {
+				$logo_id = 0;
+			}
+		}
+
+		// 6. Fallback: scrape the front page HTML for a logo image.
+		if ( 0 === $logo_id ) {
+			$detected = $this->scrape_front_page_logo();
+			if ( null !== $detected ) {
+				$logo_id  = $detected['id'];
+				$logo_url = $detected['url'];
+				$source   = 'front_page';
+			}
+		}
+
+		if ( 0 === $logo_id || '' === $logo_url ) {
+			return $this->success( array(
+				'found'  => false,
+				'message' => __( 'No site logo detected. Set one in Appearance → Customize → Site Identity, or upload one manually.', 'scalyn-qa-assistant' ),
+			) );
+		}
+
+		return $this->success( array(
+			'found'    => true,
+			'logo_id'  => $logo_id,
+			'logo_url' => $logo_url,
+			'source'   => $source,
+		) );
+	}
+
+	/**
+	 * Scrape the front page for a logo image element.
+	 *
+	 * Looks for common logo patterns: .custom-logo, .site-logo, [class*="logo"] img,
+	 * header img, etc.
+	 *
+	 * @since 1.4.12
+	 *
+	 * @return array{id: int, url: string}|null
+	 */
+	private function scrape_front_page_logo(): ?array {
+		$response = wp_remote_get( home_url( '/' ), array(
+			'timeout'   => 10,
+			'sslverify' => false,
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			return null;
+		}
+
+		$html = wp_remote_retrieve_body( $response );
+		if ( '' === $html ) {
+			return null;
+		}
+
+		libxml_use_internal_errors( true );
+		$doc = new \DOMDocument();
+		$doc->loadHTML( '<?xml encoding="UTF-8">' . $html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD | LIBXML_NOERROR );
+		libxml_clear_errors();
+
+		$xpath = new \DOMXPath( $doc );
+
+		// Selectors ordered by specificity.
+		$queries = array(
+			'//img[contains(@class, "custom-logo")]',
+			'//img[contains(@class, "site-logo")]',
+			'//*[contains(@class, "site-branding")]//img',
+			'//*[contains(@class, "site-logo")]//img',
+			'//*[contains(@class, "custom-logo")]//img',
+			'//*[contains(@class, "logo")]//img',
+			'//header//img[contains(@class, "logo")]',
+			'//header//*[contains(@class, "logo")]//img',
+			'//header//a//img',
+		);
+
+		foreach ( $queries as $query ) {
+			$nodes = $xpath->query( $query );
+			if ( false === $nodes || 0 === $nodes->length ) {
+				continue;
+			}
+
+			$img = $nodes->item( 0 );
+			$src = $img->getAttribute( 'src' );
+			if ( '' === $src ) {
+				continue;
+			}
+
+			// Try to find the attachment ID from the URL.
+			$attachment_id = (int) attachment_url_to_postid( $src );
+
+			// If exact URL didn't match, try without size suffix (e.g. -300x200).
+			if ( 0 === $attachment_id ) {
+				$clean_src     = preg_replace( '/-\d+x\d+(?=\.[a-z]+$)/i', '', $src );
+				$attachment_id = (int) attachment_url_to_postid( $clean_src );
+			}
+
+			if ( $attachment_id > 0 ) {
+				$medium_url = wp_get_attachment_image_url( $attachment_id, 'medium' );
+				return array(
+					'id'  => $attachment_id,
+					'url' => $medium_url ?: $src,
+				);
 			}
 		}
 

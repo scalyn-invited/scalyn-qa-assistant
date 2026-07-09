@@ -1748,43 +1748,68 @@
             });
         }
 
-        // Detect site logo button.
+        // Detect site logo button — calls REST endpoint to find logo.
         var detectBtn = document.getElementById('scalyn-detect-logo');
         if (detectBtn) {
             detectBtn.addEventListener('click', function () {
-                var logoId  = detectBtn.getAttribute('data-logo-id');
-                var logoUrl = detectBtn.getAttribute('data-logo-url');
+                detectBtn.disabled = true;
+                var origHtml = detectBtn.innerHTML;
+                detectBtn.innerHTML = '<span class="dashicons dashicons-update spin" aria-hidden="true"></span> Detecting...';
 
-                if (!logoId || !logoUrl) return;
+                fetch(scalynQA.restUrl + 'settings/detect-logo', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json', 'X-WP-Nonce': scalynQA.nonce },
+                    credentials: 'same-origin',
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (response) {
+                    if (response.success && response.data && response.data.found) {
+                        var logoId  = response.data.logo_id;
+                        var logoUrl = response.data.logo_url;
 
-                var input   = document.getElementById('scalyn-company-logo-id');
-                var preview = document.getElementById('scalyn-logo-preview');
+                        var input   = document.getElementById('scalyn-company-logo-id');
+                        var preview = document.getElementById('scalyn-logo-preview');
 
-                input.value = logoId;
-                preview.innerHTML = '<img src="' + logoUrl + '" alt="" style="max-height: 60px; border-radius: 6px; border: 1px solid var(--scalyn-border-light);">';
-                preview.style.display = '';
+                        input.value = logoId;
+                        preview.innerHTML = '<img src="' + logoUrl + '" alt="" style="max-height: 60px; border-radius: 6px; border: 1px solid var(--scalyn-border-light);">';
+                        preview.style.display = '';
 
-                var uploadLogoBtn = document.getElementById('scalyn-upload-logo');
-                if (uploadLogoBtn) uploadLogoBtn.innerHTML = '<span class="dashicons dashicons-upload" aria-hidden="true"></span> Change Logo';
+                        var uploadLogoBtn = document.getElementById('scalyn-upload-logo');
+                        if (uploadLogoBtn) uploadLogoBtn.innerHTML = '<span class="dashicons dashicons-upload" aria-hidden="true"></span> Change Logo';
 
-                // Add remove button if not present.
-                if (!document.getElementById('scalyn-remove-logo')) {
-                    var rmBtn = document.createElement('button');
-                    rmBtn.type = 'button';
-                    rmBtn.id = 'scalyn-remove-logo';
-                    rmBtn.className = 'scalyn-btn scalyn-btn--small scalyn-btn--ghost';
-                    rmBtn.style.marginLeft = '0.25rem';
-                    rmBtn.textContent = 'Remove';
-                    detectBtn.parentNode.insertBefore(rmBtn, detectBtn.nextSibling);
-                    bindRemoveLogo(rmBtn);
-                }
+                        // Add remove button if not present.
+                        if (!document.getElementById('scalyn-remove-logo')) {
+                            var rmBtn = document.createElement('button');
+                            rmBtn.type = 'button';
+                            rmBtn.id = 'scalyn-remove-logo';
+                            rmBtn.className = 'scalyn-btn scalyn-btn--small scalyn-btn--ghost';
+                            rmBtn.style.marginLeft = '0.25rem';
+                            rmBtn.textContent = 'Remove';
+                            detectBtn.parentNode.insertBefore(rmBtn, detectBtn.nextSibling);
+                            bindRemoveLogo(rmBtn);
+                        }
 
-                // Hide detect button since logo is now set.
-                detectBtn.style.display = 'none';
-
-                if (typeof ScalynAlert !== 'undefined') {
-                    ScalynAlert.toast('Site logo applied. Click "Save Settings" to confirm.');
-                }
+                        if (typeof ScalynAlert !== 'undefined') {
+                            ScalynAlert.toast('Site logo detected! Click "Save Settings" to confirm.');
+                        }
+                    } else {
+                        var msg = (response.data && response.data.message) ? response.data.message : 'No site logo detected.';
+                        if (typeof ScalynAlert !== 'undefined') {
+                            ScalynAlert.warning('No Logo Found', msg);
+                        } else {
+                            alert(msg);
+                        }
+                    }
+                })
+                .catch(function () {
+                    if (typeof ScalynAlert !== 'undefined') {
+                        ScalynAlert.error('Detection Failed', 'Could not detect site logo.');
+                    }
+                })
+                .finally(function () {
+                    detectBtn.disabled = false;
+                    detectBtn.innerHTML = origHtml;
+                });
             });
         }
     }
