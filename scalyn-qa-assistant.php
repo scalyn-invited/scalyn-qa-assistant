@@ -3,7 +3,7 @@
  * Plugin Name: Scalyn QA Assistant
  * Plugin URI:  https://github.com/scalyn-invited/scalyn-qa-assistant
  * Description: Website QA, SEO validation, and launch readiness tool for WordPress.
- * Version:     1.4.8
+ * Version:     1.4.9
  * Author:      Scalyn
  * Author URI:  https://scalyn.global/
  * License:     GPL-2.0+
@@ -24,7 +24,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 // Plugin constants.
-define( 'SCALYN_QA_VERSION', '1.4.8' );
+define( 'SCALYN_QA_VERSION', '1.4.9' );
 define( 'SCALYN_QA_PLUGIN_DIR', plugin_dir_path( __FILE__ ) );
 define( 'SCALYN_QA_PLUGIN_URL', plugin_dir_url( __FILE__ ) );
 define( 'SCALYN_QA_PLUGIN_BASENAME', plugin_basename( __FILE__ ) );
