@@ -131,6 +131,8 @@ $check_categories = array(
 			'placeholder_links' => __( 'Placeholder Links', 'scalyn-qa-assistant' ),
 			'form_has_submit'   => __( 'Form Submit Buttons', 'scalyn-qa-assistant' ),
 			'popup_triggers'    => __( 'Popup Triggers', 'scalyn-qa-assistant' ),
+			'broken_html'       => __( 'HTML Validation', 'scalyn-qa-assistant' ),
+			'missing_urls'      => __( 'Missing URLs', 'scalyn-qa-assistant' ),
 		),
 	),
 );

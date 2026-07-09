@@ -33,6 +33,7 @@ return array(
     'Scalyn\\QA\\Analyzers\\Content_Analyzer' => $baseDir . '/includes/analyzers/class-content-analyzer.php',
     'Scalyn\\QA\\Analyzers\\Form_Button_Analyzer' => $baseDir . '/includes/analyzers/class-form-button-analyzer.php',
     'Scalyn\\QA\\Analyzers\\HTML_Parser' => $baseDir . '/includes/analyzers/class-html-parser.php',
+    'Scalyn\\QA\\Analyzers\\HTML_Quality_Analyzer' => $baseDir . '/includes/analyzers/class-html-quality-analyzer.php',
     'Scalyn\\QA\\Analyzers\\Heading_Analyzer' => $baseDir . '/includes/analyzers/class-heading-analyzer.php',
     'Scalyn\\QA\\Analyzers\\Image_Optimization_Analyzer' => $baseDir . '/includes/analyzers/class-image-optimization-analyzer.php',
     'Scalyn\\QA\\Analyzers\\Link_Checker' => $baseDir . '/includes/analyzers/class-link-checker.php',

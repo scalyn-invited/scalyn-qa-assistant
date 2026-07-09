@@ -48,6 +48,7 @@ class ComposerStaticInit6c8860e8ac6c9e8d61a7ec16ff7cdd04
         'Scalyn\\QA\\Analyzers\\Content_Analyzer' => __DIR__ . '/../..' . '/includes/analyzers/class-content-analyzer.php',
         'Scalyn\\QA\\Analyzers\\Form_Button_Analyzer' => __DIR__ . '/../..' . '/includes/analyzers/class-form-button-analyzer.php',
         'Scalyn\\QA\\Analyzers\\HTML_Parser' => __DIR__ . '/../..' . '/includes/analyzers/class-html-parser.php',
+        'Scalyn\\QA\\Analyzers\\HTML_Quality_Analyzer' => __DIR__ . '/../..' . '/includes/analyzers/class-html-quality-analyzer.php',
         'Scalyn\\QA\\Analyzers\\Heading_Analyzer' => __DIR__ . '/../..' . '/includes/analyzers/class-heading-analyzer.php',
         'Scalyn\\QA\\Analyzers\\Image_Optimization_Analyzer' => __DIR__ . '/../..' . '/includes/analyzers/class-image-optimization-analyzer.php',
         'Scalyn\\QA\\Analyzers\\Link_Checker' => __DIR__ . '/../..' . '/includes/analyzers/class-link-checker.php',

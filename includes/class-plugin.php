@@ -88,6 +88,7 @@ final class Plugin {
 				$registry->register( new Analyzers\Link_Checker() );
 				$registry->register( new Analyzers\Form_Button_Analyzer() );
 				$registry->register( new Analyzers\Image_Optimization_Analyzer() );
+				$registry->register( new Analyzers\HTML_Quality_Analyzer() );
 
 				/**
 				 * Fires when Scalyn QA analyzers should be registered.
