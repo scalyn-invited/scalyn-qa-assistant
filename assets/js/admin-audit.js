@@ -337,6 +337,7 @@
         initTypeFilter();
         initRescanButtons();
         initScanAll();
+        initSelectiveScanning();
     }
 
     /**
@@ -434,18 +435,18 @@
         var overallScore = scores.overall || 0;
 
         var cells = row.querySelectorAll('td');
-        if (cells.length < 8) return;
+        if (cells.length < 9) return;
 
-        // Update SEO score (index 3).
-        cells[3].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(seoScore) + '">' + seoScore + '</span>';
-        // Update Content score (index 4).
-        cells[4].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(contentScore) + '">' + contentScore + '</span>';
-        // Update Func score (index 5).
-        cells[5].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(funcScore) + '">' + funcScore + '</span>';
-        // Update Overall score (index 6).
-        cells[6].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(overallScore) + '">' + overallScore + '</span>';
-        // Update Last Scan (index 7).
-        cells[7].innerHTML = '<span>' + formatTimeAgo(data.scanned_at) + '</span>';
+        // Update SEO score (index 4, after checkbox + row number).
+        cells[4].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(seoScore) + '">' + seoScore + '</span>';
+        // Update Content score (index 5).
+        cells[5].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(contentScore) + '">' + contentScore + '</span>';
+        // Update Func score (index 6).
+        cells[6].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(funcScore) + '">' + funcScore + '</span>';
+        // Update Overall score (index 7).
+        cells[7].innerHTML = '<span class="scalyn-badge scalyn-badge--' + getStatus(overallScore) + '">' + overallScore + '</span>';
+        // Update Last Scan (index 8).
+        cells[8].innerHTML = '<span>' + formatTimeAgo(data.scanned_at) + '</span>';
     }
 
     /**
@@ -517,6 +518,138 @@
         function scanNext(index) {
             if (index >= postIds.length) {
                 // Show 100% briefly before the success alert.
+                updateProgress();
+                setTimeout(function () {
+                    if (progressContainer) progressContainer.style.display = 'none';
+                    if (typeof ScalynAlert !== 'undefined') {
+                        ScalynAlert.success('Scan Complete', 'Successfully scanned ' + total + ' page(s).');
+                    }
+                }, 500);
+                return;
+            }
+
+            fetchApi('scan', {
+                method: 'POST',
+                body: JSON.stringify({ post_id: postIds[index] }),
+            })
+                .then(function (response) {
+                    if (response.success && response.data) {
+                        updateTableRow(postIds[index], response.data);
+                    }
+                    completed++;
+                    updateProgress();
+                    scanNext(index + 1);
+                })
+                .catch(function (err) {
+                    console.error('Scalyn QA: Scan error for post ' + postIds[index], err);
+                    completed++;
+                    updateProgress();
+                    scanNext(index + 1);
+                });
+        }
+
+        scanNext(0);
+    }
+
+    /**
+     * Initialize selective scanning — checkboxes + "Scan Selected" button.
+     */
+    function initSelectiveScanning() {
+        var selectAll   = document.getElementById('scalyn-select-all');
+        var scanSelBtn  = document.getElementById('scalyn-scan-selected');
+        var countEl     = document.getElementById('scalyn-selected-count');
+
+        if (!scanSelBtn) return;
+
+        function getChecked() {
+            return document.querySelectorAll('.scalyn-select-page:checked');
+        }
+
+        function updateSelectedCount() {
+            var checked = getChecked();
+            var count   = checked.length;
+            if (countEl) countEl.textContent = count;
+            scanSelBtn.style.display = count > 0 ? '' : 'none';
+        }
+
+        // Individual checkboxes.
+        document.addEventListener('change', function (e) {
+            if (!e.target.classList.contains('scalyn-select-page')) return;
+            updateSelectedCount();
+            // Sync "select all" state.
+            if (selectAll) {
+                var total   = document.querySelectorAll('.scalyn-select-page').length;
+                var checked = getChecked().length;
+                selectAll.checked       = checked === total;
+                selectAll.indeterminate = checked > 0 && checked < total;
+            }
+        });
+
+        // Select-all checkbox.
+        if (selectAll) {
+            selectAll.addEventListener('change', function () {
+                var boxes = document.querySelectorAll('.scalyn-select-page');
+                boxes.forEach(function (cb) { cb.checked = selectAll.checked; });
+                updateSelectedCount();
+            });
+        }
+
+        // Scan Selected button.
+        scanSelBtn.addEventListener('click', function () {
+            var checked = getChecked();
+            var postIds = [];
+            checked.forEach(function (cb) {
+                var id = parseInt(cb.value, 10);
+                if (id > 0) postIds.push(id);
+            });
+
+            if (postIds.length === 0) return;
+
+            if (typeof ScalynAlert !== 'undefined') {
+                ScalynAlert.confirm(
+                    'Scan Selected Pages',
+                    'This will scan ' + postIds.length + ' selected page(s). Continue?',
+                    'Start Scan'
+                ).then(function (result) {
+                    if (!result.isConfirmed) return;
+                    runSelectedBatchScan(postIds);
+                });
+            } else {
+                runSelectedBatchScan(postIds);
+            }
+        });
+    }
+
+    /**
+     * Run batch scan for a given array of post IDs (selective scan).
+     */
+    function runSelectedBatchScan(postIds) {
+        var progressContainer = document.getElementById('scalyn-scan-progress');
+        var progressBar       = progressContainer ? progressContainer.querySelector('.scalyn-progress__bar') : null;
+        var countEl           = document.getElementById('scalyn-scan-count');
+        var totalEl           = document.getElementById('scalyn-scan-total');
+        var percentEl         = document.getElementById('scalyn-scan-percent');
+
+        var completed = 0;
+        var total     = postIds.length;
+
+        if (progressContainer) {
+            progressContainer.style.display = '';
+            if (totalEl) totalEl.textContent = total;
+            if (countEl) countEl.textContent = '0';
+            if (percentEl) percentEl.textContent = '0';
+            if (progressBar) progressBar.style.width = '0%';
+        }
+
+        function updateProgress() {
+            var percent = Math.round((completed / total) * 100);
+            if (progressBar) progressBar.style.width = percent + '%';
+            if (countEl) countEl.textContent = completed;
+            if (percentEl) percentEl.textContent = percent;
+        }
+
+        function scanNext(index) {
+            if (index >= postIds.length) {
                 updateProgress();
                 setTimeout(function () {
                     if (progressContainer) progressContainer.style.display = 'none';

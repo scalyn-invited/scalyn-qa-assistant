@@ -45,6 +45,11 @@ $sum_total      = $sum_green + $sum_yellow + $sum_red + $sum_unscanned;
 			<p class="scalyn-page-header__description"><?php esc_html_e( 'Review SEO, content, and functionality scores for every page on your site.', 'scalyn-qa-assistant' ); ?></p>
 		</div>
 		<div class="scalyn-page-header__actions">
+			<button type="button" id="scalyn-scan-selected" class="scalyn-btn scalyn-btn--secondary" style="display:none;">
+				<span class="dashicons dashicons-update" aria-hidden="true"></span>
+				<?php esc_html_e( 'Scan Selected', 'scalyn-qa-assistant' ); ?>
+				(<span id="scalyn-selected-count">0</span>)
+			</button>
 			<button type="button" id="scalyn-scan-all" class="scalyn-btn">
 				<span class="dashicons dashicons-update" aria-hidden="true"></span>
 				<?php printf( esc_html__( 'Scan All Pages (%d)', 'scalyn-qa-assistant' ), $total_posts ); ?>
@@ -127,6 +132,7 @@ $sum_total      = $sum_green + $sum_yellow + $sum_red + $sum_unscanned;
 		<table class="scalyn-table">
 			<thead>
 				<tr>
+					<th class="scalyn-table__col--narrow"><input type="checkbox" id="scalyn-select-all" title="<?php esc_attr_e( 'Select all', 'scalyn-qa-assistant' ); ?>"></th>
 					<th class="scalyn-table__col--narrow"><?php esc_html_e( '#', 'scalyn-qa-assistant' ); ?></th>
 					<th><?php esc_html_e( 'Page', 'scalyn-qa-assistant' ); ?></th>
 					<th class="scalyn-table__col--narrow"><?php esc_html_e( 'Type', 'scalyn-qa-assistant' ); ?></th>
@@ -141,7 +147,7 @@ $sum_total      = $sum_green + $sum_yellow + $sum_red + $sum_unscanned;
 			<tbody>
 				<?php if ( empty( $items ) ) : ?>
 					<tr>
-						<td colspan="9" style="text-align:center;padding:2rem;">
+						<td colspan="10" style="text-align:center;padding:2rem;">
 							<span class="dashicons dashicons-search" style="font-size:32px;width:32px;height:32px;color:var(--scalyn-text-faint);display:block;margin:0 auto 0.5rem;" aria-hidden="true"></span>
 							<strong style="display:block;margin-bottom:0.25rem;"><?php esc_html_e( 'No pages found', 'scalyn-qa-assistant' ); ?></strong>
 							<span style="color:var(--scalyn-text-muted);font-size:0.8125rem;"><?php esc_html_e( 'Try adjusting your filters or run a scan to get started.', 'scalyn-qa-assistant' ); ?></span>
@@ -188,6 +194,7 @@ $sum_total      = $sum_green + $sum_yellow + $sum_red + $sum_unscanned;
 						}
 						?>
 						<tr data-post-id="<?php echo esc_attr( $post_id ); ?>">
+							<td class="scalyn-table__col--narrow"><input type="checkbox" class="scalyn-select-page" value="<?php echo esc_attr( $post_id ); ?>"></td>
 							<td class="scalyn-table__col--narrow"><?php echo esc_html( $row_number ); ?></td>
 							<td>
 								<a href="<?php echo esc_url( $audit_url ); ?>">
