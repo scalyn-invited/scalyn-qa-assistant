@@ -1747,6 +1747,46 @@
                 btn.remove();
             });
         }
+
+        // Detect site logo button.
+        var detectBtn = document.getElementById('scalyn-detect-logo');
+        if (detectBtn) {
+            detectBtn.addEventListener('click', function () {
+                var logoId  = detectBtn.getAttribute('data-logo-id');
+                var logoUrl = detectBtn.getAttribute('data-logo-url');
+
+                if (!logoId || !logoUrl) return;
+
+                var input   = document.getElementById('scalyn-company-logo-id');
+                var preview = document.getElementById('scalyn-logo-preview');
+
+                input.value = logoId;
+                preview.innerHTML = '<img src="' + logoUrl + '" alt="" style="max-height: 60px; border-radius: 6px; border: 1px solid var(--scalyn-border-light);">';
+                preview.style.display = '';
+
+                var uploadLogoBtn = document.getElementById('scalyn-upload-logo');
+                if (uploadLogoBtn) uploadLogoBtn.innerHTML = '<span class="dashicons dashicons-upload" aria-hidden="true"></span> Change Logo';
+
+                // Add remove button if not present.
+                if (!document.getElementById('scalyn-remove-logo')) {
+                    var rmBtn = document.createElement('button');
+                    rmBtn.type = 'button';
+                    rmBtn.id = 'scalyn-remove-logo';
+                    rmBtn.className = 'scalyn-btn scalyn-btn--small scalyn-btn--ghost';
+                    rmBtn.style.marginLeft = '0.25rem';
+                    rmBtn.textContent = 'Remove';
+                    detectBtn.parentNode.insertBefore(rmBtn, detectBtn.nextSibling);
+                    bindRemoveLogo(rmBtn);
+                }
+
+                // Hide detect button since logo is now set.
+                detectBtn.style.display = 'none';
+
+                if (typeof ScalynAlert !== 'undefined') {
+                    ScalynAlert.toast('Site logo applied. Click "Save Settings" to confirm.');
+                }
+            });
+        }
     }
 
     // -------------------------------------------------------------------------

@@ -32,6 +32,16 @@ if ( $company_logo_id > 0 ) {
 	}
 }
 
+// Detect site logo from Customizer (custom_logo theme mod).
+$site_logo_id  = (int) get_theme_mod( 'custom_logo', 0 );
+$site_logo_url = '';
+if ( $site_logo_id > 0 ) {
+	$url = wp_get_attachment_image_url( $site_logo_id, 'medium' );
+	if ( $url ) {
+		$site_logo_url = $url;
+	}
+}
+
 $report_url = wp_nonce_url( admin_url( 'admin-post.php?action=scalyn_qa_generate_report' ), 'scalyn_qa_report' );
 ?>
 <div class="scalyn-wrap">
@@ -118,12 +128,29 @@ $report_url = wp_nonce_url( admin_url( 'admin-post.php?action=scalyn_qa_generate
 							<span class="dashicons dashicons-upload" aria-hidden="true"></span>
 							<?php echo 0 === $company_logo_id ? esc_html__( 'Upload Logo', 'scalyn-qa-assistant' ) : esc_html__( 'Change Logo', 'scalyn-qa-assistant' ); ?>
 						</button>
+						<?php if ( $site_logo_id > 0 && $company_logo_id !== $site_logo_id ) : ?>
+						<button
+							type="button"
+							id="scalyn-detect-logo"
+							class="scalyn-btn scalyn-btn--small scalyn-btn--secondary"
+							data-logo-id="<?php echo esc_attr( (string) $site_logo_id ); ?>"
+							data-logo-url="<?php echo esc_url( $site_logo_url ); ?>"
+							style="margin-left: 0.25rem;"
+						>
+							<span class="dashicons dashicons-visibility" aria-hidden="true"></span>
+							<?php esc_html_e( 'Use Site Logo', 'scalyn-qa-assistant' ); ?>
+						</button>
+						<?php endif; ?>
 						<?php if ( $company_logo_id > 0 ) : ?>
 						<button type="button" id="scalyn-remove-logo" class="scalyn-btn scalyn-btn--small scalyn-btn--ghost" style="margin-left: 0.25rem;">
 							<?php esc_html_e( 'Remove', 'scalyn-qa-assistant' ); ?>
 						</button>
 						<?php endif; ?>
+						<?php if ( $site_logo_id > 0 && $company_logo_id !== $site_logo_id ) : ?>
+						<p class="scalyn-field-description"><?php esc_html_e( 'Upload a logo, or click "Use Site Logo" to use the logo from Appearance → Customize → Site Identity.', 'scalyn-qa-assistant' ); ?></p>
+						<?php else : ?>
 						<p class="scalyn-field-description"><?php esc_html_e( 'Replace the default Scalyn logo with your company or client logo in the report header.', 'scalyn-qa-assistant' ); ?></p>
+						<?php endif; ?>
 					</td>
 				</tr>
 			</table>

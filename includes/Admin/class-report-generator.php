@@ -332,7 +332,11 @@ class Report_Generator {
 		$settings         = get_option( 'scalyn_qa_report_settings', array() );
 		$company_logo_id  = (int) ( $settings['company_logo_id'] ?? 0 );
 
-		// Use company logo if set.
+		// Use company logo if set, then fall back to site logo from Customizer.
+		if ( 0 === $company_logo_id ) {
+			$company_logo_id = (int) get_theme_mod( 'custom_logo', 0 );
+		}
+
 		if ( $company_logo_id > 0 ) {
 			$file = get_attached_file( $company_logo_id );
 			if ( $file && file_exists( $file ) ) {
